@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - DDO
+  - Manager
   layers:
   - Default
   - TransparentFX
@@ -11,6 +13,8 @@ TagManager:
   - 
   - Water
   - UI
+  - CharacterFront
+  - CharacterBack
   - 
   - 
   - 
@@ -34,10 +38,17 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - BGI
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: BGI
+    uniqueID: 3055558049
+    locked: 0
+  - name: Character
+    uniqueID: 1049400307
+    locked: 0
+  - name: UI
+    uniqueID: 1902061603
     locked: 0
