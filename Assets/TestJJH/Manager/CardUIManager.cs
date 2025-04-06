@@ -83,15 +83,32 @@ public class CardUIManager : BaseManager, IsynchronizeUI
         });
     }
 
-    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager)
+    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
         
     }
 
-    public void synchronization(BaseManager baseManager)
+    public void Synchronization(BaseManager baseManager)
     {
-        if(baseManager is CardManager cardManager)
+        
+        if (baseManager is CardManager cardManager)
         {
+            if (cardManager.Hand.Count == 0)
+            {
+                for (int i = 0; i < m_cardButtons.Length; i++)
+                {
+                    m_cardButtons[i].gameObject.SetActive(false);
+                }
+                return;
+            }
+            else
+            {
+                for (int i = 0; i < m_cardButtons.Length; i++)
+                {
+                    m_cardButtons[i].gameObject.SetActive(true);
+                }
+            }
+
             //Deck 열람 초기화
             for (int i = 0; i < m_deckButtonGrid.transform.childCount; i++)
             {
@@ -223,7 +240,7 @@ public class CardUIManager : BaseManager, IsynchronizeUI
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, CardManager cardManager)
+    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
     {
         foreach (var cardButton in m_cardButtonsDic)
         {

@@ -10,13 +10,13 @@ public abstract class BaseManager : MonoBehaviour
     public abstract void Initialize(MasterManager masterManager, TurnManager turnManager);
 
     // 데이터 초기화시 호출
-    public virtual void DataInitialize(TurnManager turnManager, CharacterManager characterManager )
+    public virtual void DataInitialize(TurnManager turnManager, CharacterManager characterManager , MonsterManager monsterManager)
     {
 
     }
 
     // 턴 종료시 호출
-    public virtual void SetTurn(TurnManager turnManager, CharacterManager characterManager, CardManager cardManager)
+    public virtual void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
     {
 
     }
@@ -29,5 +29,5 @@ interface IUpdatableManager
 
 interface IsynchronizeUI
 {
-    void synchronization(BaseManager baseManager);
+    void Synchronization(BaseManager baseManager);
 }

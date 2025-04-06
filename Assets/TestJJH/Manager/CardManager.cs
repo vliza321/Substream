@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using Unity.VisualScripting;
 
 public class CardManager : BaseManager
 {
@@ -34,7 +35,7 @@ public class CardManager : BaseManager
         m_turnCounter = 1;
     }
 
-    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager)
+    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
         m_hand = new List<Card>();
 
@@ -46,11 +47,14 @@ public class CardManager : BaseManager
             List<Card> Deck = new List<Card>();
             foreach(var c in DontDestroyOnLoadManager.Instance.UseCard.UseCard)
             {
-                if(characterManager.Character[a].PrototypeUnitID == c.Value.PrototypeUnitID)
+                if (turnManager.CurrentTurnUnit is CharacterData character)
                 {
-                    Card newCard = new Card();
-                    newCard.Initialize(DontDestroyOnLoadManager.Instance.Card.Card[c.Value.CardID]);
-                    Deck.Add(newCard);
+                    if (character.PrototypeUnitID == c.Value.PrototypeUnitID)
+                    {
+                        Card newCard = new Card();
+                        newCard.Initialize(DontDestroyOnLoadManager.Instance.Card.Card[c.Value.CardID]);
+                        Deck.Add(newCard);
+                    }
                 }
             }
             m_deck.Add(Deck);
@@ -60,10 +64,9 @@ public class CardManager : BaseManager
         HandShake(turnManager, characterManager);
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, CardManager cardManager)
+    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
     {
         HandShake(turnManager, characterManager);
-        Debug.Log(m_graveyard[m_turnCounter].Count);
     }
 
     private void HandShake(TurnManager turnManager, CharacterManager characterManager)
@@ -75,9 +78,31 @@ public class CardManager : BaseManager
         }
         m_hand.Clear();
 
-        int position = turnManager.TurnCount;
-        position--;
-        position = position % characterManager.Character.Count;
+        int position = 0;
+        if (!(turnManager.CurrentTurnUnit is CharacterData)) {
+            Debug.Log("몬스터 턴");
+            return;
+        }
+        else
+        {
+            if (turnManager.CurrentTurnUnit is CharacterData currentTurnCharacter)
+            {
+                var key = (currentTurnCharacter.UserID, currentTurnCharacter.PrototypeUnitID, currentTurnCharacter.InstanceID);
+                Debug.Log(key);
+                int i = 0;
+                foreach (var character in characterManager.Character)
+                {
+                    var characterkey = (character.UserID, character.PrototypeUnitID, character.InstanceID);
+                    if (key.Equals(characterkey))
+                    {
+                        position = i;
+                        break;
+                    }
+                    i++;    
+                }
+            }
+        }
+
         // 핸드 패 새로 생성
         if (m_deck[position].Count < 5 && m_deck[position].Count >0)
         {

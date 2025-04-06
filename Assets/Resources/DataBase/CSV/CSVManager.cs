@@ -14,29 +14,17 @@ public class CSVManager : MonoBehaviour
 
     private List<string> FILE_NAME = new List<string> { 
         "LocalUser",
-        "PrototypeUnit",
-        "Unit",
+        "PrototypeCharacter",
+        "Character",
         "Card",
         "UseCard",
     };
     //CSV파일 파싱 직후 저장 공간
     private List<Dictionary<string, object>> LocalUser = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> PrototypeUnit = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> Unit = new List<Dictionary<string, object>>();
+    private List<Dictionary<string, object>> PrototypeCharacter = new List<Dictionary<string, object>>();
+    private List<Dictionary<string, object>> Character = new List<Dictionary<string, object>>();
     private List<Dictionary<string, object>> Card = new List<Dictionary<string, object>>();
     private List<Dictionary<string, object>> UseCard = new List<Dictionary<string, object>>();
-
-    /*
-    private List<Dictionary<string, object>> HaveParty = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> Monster = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> Party = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> Progress = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> PrototypeWeapon = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> Stage = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> UnitParticipate = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> UseWeapon = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> Weapon = new List<Dictionary<string, object>>();
-    */
 
     public void Initialize(Dictionary<string, DataScriptableObjects> database)
     {

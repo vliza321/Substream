@@ -1,37 +1,40 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public class PrototypeUnitData
+public class MonsterData : Unit
 {
-    public int ID;
-    public string Name;
-    public int InstanceCounter;
+    public int UserID;
+    public int PrototypeUnitID;
+    public int InstanceID;
+    public int Speed;
 }
 
-public class PrototypeUnitDataList : DataScriptableObjects
+public class MonsterDataList : DataScriptableObjects
 {
-    //key 는 int 형, LocalUserData의 ID
-    public Dictionary<int, PrototypeUnitData> PrototypeUnit = new Dictionary<int, PrototypeUnitData>();
+    //key �� (int,int,int)����, ������� UserID, PrototypeUnitID, InstanceID
+    public Dictionary<(int, int, int), MonsterData> Monster = new Dictionary<(int, int, int), MonsterData>();
 
 
-    public List<PrototypeUnitData> PrototypeUnitDatas = new List<PrototypeUnitData>();
+    public List<MonsterData> MonsterDatas = new List<MonsterData>();
+
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;
-        foreach (var data in PrototypeUnitDatas)
+        foreach (var data in MonsterDatas)
         {
-            PrototypeUnit.Add(data.ID, data);
+            if (SelectUserID == data.UserID)
+            {
+                var key = (data.UserID, data.PrototypeUnitID, data.InstanceID);
+                Monster.Add(key, data);
+            }
         }
         return result;
     }
 
     public override void TranslateDicToListAtSaveDatas(int SelectUserID)
     {
-        foreach (var data in PrototypeUnitDatas)
+        foreach (var data in MonsterDatas)
         {
-            //딕셔너리 데이터를 리스트로 재저장하여 수정
-            //수정할 데이터는 key값이 아닌 모든 값
             /*
             data.Day = LocalUserDataDic[data.ID].Day;
             data.Gold = LocalUserDataDic[data.ID].Gold;
