@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StageNode : MonoBehaviour
+public class StageNode
 {
     public string StageID;
     public int levelIndex;
@@ -30,25 +30,14 @@ public class StageNode : MonoBehaviour
         {
             if (nextNodes[i] != null)
             {
-                nextNodes[i].SetActive();
+                nextNodes[i].SetActive(true);
             }
         }
     }
 
-    // Start is called before the first frame update
-    void Start()
+    public void SetActive(bool state)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    public void SetActive()
-    {
-        isActive = true;
+        isActive = state;
+        Debug.Log("Node Set Active: " + StageID + " " + isActive);
     }
 }
