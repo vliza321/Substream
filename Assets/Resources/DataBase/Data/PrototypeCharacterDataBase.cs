@@ -1,34 +1,38 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class UseCardData
+[System.Serializable]
+public class PrototypeCharacterData
 {
-    public int PrototypeUnitID;
-    public int CardID;
+    public int ID;
+    public string Name;
+    public int InstanceCounter;
 }
 
-public class UseCardDataList : DataScriptableObjects
+[System.Serializable]
+public class PrototypeCharacterDataBase : DataScriptableObjects
 {
-    //key 는 int 형, CardData의 ID
-    public Dictionary<(int, int), UseCardData> UseCard = new Dictionary<(int, int), UseCardData>();
+    [Serialize]
+    //key 는 int 형, LocalUserData의 ID
+    public Dictionary<int, PrototypeCharacterData> PrototypeCharacter = new Dictionary<int, PrototypeCharacterData>();
 
 
-    public List<UseCardData> UseCardDatas = new List<UseCardData>();
+    public List<PrototypeCharacterData> PrototypeCharacterList = new List<PrototypeCharacterData>();
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;
-        foreach (var data in UseCardDatas)
+        foreach (var data in PrototypeCharacterList)
         {
-            var key = (data.PrototypeUnitID, data.CardID);
-            UseCard.Add(key, data);
+            PrototypeCharacter.Add(data.ID, data);
         }
         return result;
     }
 
     public override void TranslateDicToListAtSaveDatas(int SelectUserID)
     {
-        foreach (var data in UseCardDatas)
+        foreach (var data in PrototypeCharacterList)
         {
             //딕셔너리 데이터를 리스트로 재저장하여 수정
             //수정할 데이터는 key값이 아닌 모든 값

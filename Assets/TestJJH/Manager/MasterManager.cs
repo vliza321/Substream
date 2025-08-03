@@ -4,9 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MasterManager : MonoBehaviour
 {
-    private LinkedList<BaseManager> m_managers;
     private LinkedList<IUpdatableManager> m_IUpdatableManagers;
-
     [SerializeField]
     private CharacterManager m_characterManager;
     [SerializeField]
@@ -25,6 +23,8 @@ public class MasterManager : MonoBehaviour
     private MonsterManager m_monsterManager;
     [SerializeField]
     private MonsterUIManager m_monsterUIManager;
+
+    private LinkedList<BaseManager> m_managers;
 
     public void Awake()
     {
@@ -46,7 +46,6 @@ public class MasterManager : MonoBehaviour
             node.Value.Initialize(this, m_turnManager);
             BaseManager temtManager;
             if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
-            if (temtManager is IUpdatableManager updatableObject) m_IUpdatableManagers.AddLast(updatableObject);
         }
 
         for (LinkedListNode<BaseManager> node = m_managers.First; node != null; node = node.Next)

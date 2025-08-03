@@ -61,6 +61,8 @@ public class TurnUIManager : BaseManager, IsynchronizeUI
 
     public void Synchronization(BaseManager baseManager)
     {
+        if (Input.GetKeyDown(KeyCode.Escape)) { }
+
         if (baseManager is TurnManager turnManager)
         {
             for (int i = turnManager.Units.Count + 1; i < OrderByTurnSpeedImage.Count; i++)

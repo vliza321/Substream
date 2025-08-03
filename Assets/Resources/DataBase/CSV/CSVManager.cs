@@ -13,10 +13,10 @@ public class CSVManager : MonoBehaviour
     private static CSVManager instance;
 
     private List<string> FILE_NAME = new List<string> { 
+        "Card",
         "LocalUser",
         "PrototypeCharacter",
         "Character",
-        "Card",
         "UseCard",
     };
     //CSV파일 파싱 직후 저장 공간
@@ -45,7 +45,7 @@ public class CSVManager : MonoBehaviour
             {
                 fnList = CSVReader.Read(fn);
                 SetFieldByString(fn, fnList);
-                ConvertCSVToScriptableObject(fn, fnList,database);
+                ConvertCSVToScriptableObject(fn, fnList, database);
             }
         }
     }
@@ -94,12 +94,11 @@ public class CSVManager : MonoBehaviour
         {
             fieldesName[counter] = field.Name;
             counter++;
-            
         }
 
         foreach (Dictionary<string, object> data in parsedData)
         {
-            //찾은 타입에 맞게 해당 타입을 동적 생성
+            // 찾은 타입에 맞게 해당 타입을 동적 생성
             var newData = Activator.CreateInstance(type);// ~~Data 클래스
             if (newData == null)
             {
@@ -109,28 +108,36 @@ public class CSVManager : MonoBehaviour
 
             for (int i = 0; i < fieldesName.Length; i++)
             {
-                //속성들 중에 해당 속성 값이 이름과 같다면
+                // 속성들 중에 해당 속성 값이 이름과 같다면
                 if (data.ContainsKey(fieldesName[i]))
                 {
-                    // data에서 가져온 값을 속성의 타입에 맞게 변환하여 newData의 해당 속성에 저장
-                    fieldes[i].SetValue(newData, Convert.ChangeType(data[fieldesName[i]], fieldes[i].FieldType));
+                    if (fieldes[i].FieldType.IsEnum) 
+                    {
+                        // enum 타입이라면 enum으로 파싱해서 해당 속성에 저장
+                        fieldes[i].SetValue(newData, Enum.Parse(fieldes[i].FieldType, data[fieldesName[i]].ToString()));
+                    }
+                    else
+                    {
+                        // data에서 가져온 값을 속성의 타입에 맞게 변환하여 newData의 해당 속성에 저장
+                        fieldes[i].SetValue(newData, Convert.ChangeType(data[fieldesName[i]], fieldes[i].FieldType));
+                    }
                 }
             }
-            SaveDataListInScriptableObject(dataName, newData, datacontainers[dataName]);
+            SaveDataListInDataScriptableObject(dataName, newData, datacontainers[dataName]);
         }
     }
 
 
-    private bool SaveDataListInScriptableObject(string dataName, object newData, DataScriptableObjects container)
+    private bool SaveDataListInDataScriptableObject(string dataName, object newData, DataScriptableObjects container)
     {
         // 동적으로 타입을 가져오기
-        Type type = Type.GetType(dataName + "DataList");
+        Type type = Type.GetType(dataName + "DataBase");
         if (type == null)
         {
             return false;
         }
 
-        FieldInfo field = type.GetField(dataName+"Datas");
+        FieldInfo field = type.GetField(dataName+"List");
         if(field == null)
         {
             return false;

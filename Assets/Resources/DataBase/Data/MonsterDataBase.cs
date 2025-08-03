@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
+[System.Serializable]
 public class MonsterData : Unit
 {
     public int UserID;
@@ -9,18 +12,20 @@ public class MonsterData : Unit
     public int Speed;
 }
 
-public class MonsterDataList : DataScriptableObjects
+[System.Serializable]
+public class MonsterDataBase : DataScriptableObjects
 {
+    [Serialize]
     //key 는 (int,int,int)형식, 순서대로 UserID, PrototypeUnitID, InstanceID
     public Dictionary<(int, int, int), MonsterData> Monster = new Dictionary<(int, int, int), MonsterData>();
 
 
-    public List<MonsterData> MonsterDatas = new List<MonsterData>();
+    public List<MonsterData> MonsterList = new List<MonsterData>();
 
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;
-        foreach (var data in MonsterDatas)
+        foreach (var data in MonsterList)
         {
             if (SelectUserID == data.UserID)
             {
@@ -33,7 +38,7 @@ public class MonsterDataList : DataScriptableObjects
 
     public override void TranslateDicToListAtSaveDatas(int SelectUserID)
     {
-        foreach (var data in MonsterDatas)
+        foreach (var data in MonsterList)
         {
             /*
             data.Day = LocalUserDataDic[data.ID].Day;

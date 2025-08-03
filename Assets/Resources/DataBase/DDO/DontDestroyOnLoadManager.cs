@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -31,16 +32,24 @@ public class DontDestroyOnLoadManager : MonoBehaviour
 
     private Dictionary<string, DataScriptableObjects> m_DataBaseDic;
 
-    private LocalUserDataList m_localUser;
-    private PrototypeCharacterDataList m_prototypeCharacter;
-    private CharacterDataList m_character;
-    private CardDataList m_card;
-    private UseCardDataList m_useCard;
-    public LocalUserDataList LocalUser { get => m_localUser; }
-    public PrototypeCharacterDataList PrototypeCharacter { get => m_prototypeCharacter; }
-    public CharacterDataList Character { get => m_character; }
-    public CardDataList Card { get => m_card; }
-    public UseCardDataList UseCard { get => m_useCard; }
+    [SerializeField]
+    private LocalUserDataBase m_localUser;
+    [SerializeField]
+    private PrototypeCharacterDataBase m_prototypeCharacter;
+    [SerializeField]
+    private CharacterDataBase m_character;
+    [SerializeField]
+    private CardDataBase m_card;
+    [SerializeField]
+    private UseCardDataBase m_useCard;
+
+
+
+    public LocalUserDataBase LocalUser { get => m_localUser; }
+    public PrototypeCharacterDataBase PrototypeCharacter { get => m_prototypeCharacter; }
+    public CharacterDataBase Character { get => m_character; }
+    public CardDataBase Card { get => m_card; }
+    public UseCardDataBase UseCard { get => m_useCard; }
 
     private void Awake()
     {
@@ -71,17 +80,17 @@ public class DontDestroyOnLoadManager : MonoBehaviour
 
         m_DataBaseDic = new Dictionary<string, DataScriptableObjects>();
 
-        m_localUser = new LocalUserDataList();
-        m_prototypeCharacter = new PrototypeCharacterDataList();
-        m_character = new CharacterDataList();
-        m_card = new CardDataList();
-        m_useCard = new UseCardDataList();
+        m_localUser = new LocalUserDataBase();
+        m_prototypeCharacter = new PrototypeCharacterDataBase();
+        m_character = new CharacterDataBase();
+        m_card = new CardDataBase();
+        m_useCard = new UseCardDataBase();
 
-        m_localUser.LocalUserDatas.Clear();
-        m_prototypeCharacter.PrototypeCharacterDatas.Clear();
-        m_character.CharacterDatas.Clear();
-        m_card.CardDatas.Clear();
-        m_useCard.UseCardDatas.Clear();
+        m_localUser.LocalUserList.Clear();
+        m_prototypeCharacter.PrototypeCharacterList.Clear();
+        m_character.CharacterList.Clear();
+        m_card.CardList.Clear();
+        m_useCard.UseCardList.Clear();
 
         m_localUser.LocalUser.Clear();
         m_prototypeCharacter.PrototypeCharacter.Clear();
@@ -111,7 +120,7 @@ public class DontDestroyOnLoadManager : MonoBehaviour
         DDO = null;
 
         m_CSVManager.Initialize(m_DataBaseDic);
-        //m_GameManager.Initialized();
+        m_GameManager.Initialize();
 
         m_localUser.TranslateListToDic(m_GameManager.SelectUserID);
         m_prototypeCharacter.TranslateListToDic(m_GameManager.SelectUserID);
@@ -119,24 +128,24 @@ public class DontDestroyOnLoadManager : MonoBehaviour
         m_card.TranslateListToDic(m_GameManager.SelectUserID);
         m_useCard.TranslateListToDic(m_GameManager.SelectUserID);
 
-        foreach(var LU in m_localUser.LocalUserDatas)
+        foreach(var LU in m_localUser.LocalUserList)
         {
             Debug.Log("LocalUser :" + LU.ID);
         }
-        foreach (var PU in m_prototypeCharacter.PrototypeCharacterDatas)
+        foreach (var PU in m_prototypeCharacter.PrototypeCharacterList)
         {
             Debug.Log("PrototypeUnit : " + PU.ID + " " + PU.Name + " " + PU.InstanceCounter);
         }
-        foreach (var U in m_character.CharacterDatas)
+        foreach (var U in m_character.CharacterList)
         {
             Debug.Log("Unit : " + U.UserID + " " + U.PrototypeUnitID + " " + U.InstanceID);
 
         }
-        foreach (var C in m_card.CardDatas)
+        foreach (var C in m_card.CardList)
         {
             Debug.Log("Card : " + C.ID + " " + C.Name + " " + C.Type + " " + C.Rank + " " + C.Cost + " " + C.TargetCount + " " + C.Explanation);
         }
-        foreach (var UC in m_useCard.UseCardDatas) 
+        foreach (var UC in m_useCard.UseCardList) 
         {
             Debug.Log("UseCard :" + UC.PrototypeUnitID + " " + UC.CardID);
         }

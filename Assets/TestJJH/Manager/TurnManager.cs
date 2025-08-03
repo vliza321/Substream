@@ -39,6 +39,15 @@ public class TurnManager : BaseManager
         m_units = new LinkedList<Unit>();
     }
 
+
+    /// <summary>
+    /// 유닛의 속도 용어 정리
+    /// Speed는 기본 속도
+    /// UnitSpeed는 인플레이 속도(즉, 가변 가능한 변수)
+    /// </summary>
+    /// <param name="turnManager"></param>
+    /// <param name="characterManager"></param>
+    /// <param name="monsterManager"></param>
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
         m_units.Clear();
@@ -107,6 +116,8 @@ public class TurnManager : BaseManager
         m_units.RemoveFirst();
         m_etherCount = 15;
         m_turnCount++;
+
+        units.Clear();
     }
 
     public bool SetEther(int EtherCount)

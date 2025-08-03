@@ -1,22 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+
+[System.Serializable]
 public class LocalUserData
 {
     public int ID;
 }
 
-public class LocalUserDataList : DataScriptableObjects
+[System.Serializable]
+public class LocalUserDataBase : DataScriptableObjects
 {
+    [Serialize]
     //key ´Â int Çü, LocalUserDataÀÇ ID
     public Dictionary<int, LocalUserData> LocalUser = new Dictionary<int, LocalUserData>();
 
 
-    public List<LocalUserData> LocalUserDatas = new List<LocalUserData>();
+    public List<LocalUserData> LocalUserList = new List<LocalUserData>();
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;
-        foreach (var data in LocalUserDatas)
+        foreach (var data in LocalUserList)
         {
             LocalUser.Add(data.ID, data);
         }
@@ -25,7 +30,7 @@ public class LocalUserDataList : DataScriptableObjects
 
     public override void TranslateDicToListAtSaveDatas(int SelectUserID)
     {
-        foreach (var data in LocalUserDatas)
+        foreach (var data in LocalUserList)
         {
             /*
             data.Day = LocalUserDataDic[data.ID].Day;

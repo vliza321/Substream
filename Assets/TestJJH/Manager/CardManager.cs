@@ -8,27 +8,21 @@ using Unity.VisualScripting;
 public class CardManager : BaseManager
 {
     private List<Card> m_hand;
-
     private List<List<Card>> m_deck;
     private List<List<Card>> m_graveyard;
-
     private int m_turnCounter;
-
     public List<Card> Hand
     {
         get { return m_hand; }
     }
-
     public List<Card> Deck
     {
         get { return m_deck[m_turnCounter]; }
     }
-
     public List<Card> Graveyard
     {
         get { return m_graveyard[m_turnCounter]; }
     }
-
     public override void Initialize(MasterManager masterManager, TurnManager turnManager)
     {
         m_masterManager = masterManager;
