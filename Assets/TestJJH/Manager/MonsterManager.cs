@@ -19,14 +19,14 @@ public class MonsterManager : BaseManager
 
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
-        // ÀÓ½Ã ¸ó½ºÅÍ µ¥ÀÌÅÍ : 1¸¶¸®
+        // ì„ì‹œ ëª¬ìŠ¤í„° ë°ì´í„° : 1ë§ˆë¦¬
         for (int i = 0; i < 1; i++)
         {
             MonsterData monster = new MonsterData();
             monster.UserID = 0;
             monster.PrototypeUnitID = i;
             monster.InstanceID = 0;
-            monster.Speed = 20;
+            monster.Speed = 9;
             
             m_monster.AddLast(monster);
         }

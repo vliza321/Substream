@@ -1,33 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
-public class UseCardData
+public class PrototypeCharacterTableData : Unit
 {
+    public int UserID;
     public int PrototypeUnitID;
-    public int CardID;
+    public int InstanceID;
+    public int Speed;
 }
 
 [System.Serializable]
-public class UseCardDataBase : DataScriptableObjects
+public class PrototypeCharacterTableDataBase : DataScriptableObjects
 {
     [Serialize]
-    //key 는 int 형, CardData의 ID
-    public Dictionary<(int, int), UseCardData> UseCard = new Dictionary<(int, int), UseCardData>();
+    //key 는 (int,int,int)형식, 순서대로 UserID, PrototypeUnitID, InstanceID
+    public Dictionary<(int, int, int), PrototypeCharacterTableData> Character = new Dictionary<(int, int, int), PrototypeCharacterTableData>();
 
 
-    public List<UseCardData> UseCardList = new List<UseCardData>();
+    public List<PrototypeCharacterTableData> CharacterList = new List<PrototypeCharacterTableData>();
+
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;
-        foreach (var data in UseCardList)
+        foreach (var data in CharacterList)
         {
-            var key = (data.PrototypeUnitID, data.CardID);
-            if (UseCard.TryAdd(key, data))
+            if(SelectUserID == data.UserID)
             {
-                result = false;
+                var key = (data.UserID, data.PrototypeUnitID, data.InstanceID);
+                Character.Add(key, data);
             }
         }
         return result;
@@ -35,10 +39,8 @@ public class UseCardDataBase : DataScriptableObjects
 
     public override void TranslateDicToListAtSaveDatas(int SelectUserID)
     {
-        foreach (var data in UseCardList)
+        foreach (var data in CharacterList)
         {
-            //딕셔너리 데이터를 리스트로 재저장하여 수정
-            //수정할 데이터는 key값이 아닌 모든 값
             /*
             data.Day = LocalUserDataDic[data.ID].Day;
             data.Gold = LocalUserDataDic[data.ID].Gold;
@@ -60,7 +62,7 @@ public class UseCardDataBase : DataScriptableObjects
 
     public override void ClearContainer()
     {
-        UseCardList.Clear();
-        UseCard.Clear();
+        CharacterList.Clear();
+        Character.Clear();
     }
 }

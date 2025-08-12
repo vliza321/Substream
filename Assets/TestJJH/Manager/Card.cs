@@ -1,27 +1,28 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
 public class Card
 {
-    private CardData m_cardData;
+    private CardTableData m_cardData;
 
-    public void Initialize(CardData cardData)
+    public void Initialize(CardTableData cardData)
     {
-        m_cardData = new CardData
+        m_cardData = new CardTableData
         {
             ID = cardData.ID,
-            Name = cardData.Name,
-            Type = cardData.Type,
-            Rank = cardData.Rank,
+            CardName = cardData.CardName,
+            CardType = cardData.CardType,
+            CardRarity = cardData.CardRarity,
             Cost = cardData.Cost,
-            TargetCount = cardData.TargetCount,
-            Explanation = cardData.Explanation
+            CardTexture = cardData.CardTexture,
+            CardText = cardData.CardText,
+            SkillID = cardData.SkillID,
         };
     }
 
-    public CardData CardData
+    public CardTableData CardData
     {
         get { return m_cardData; }
         set { m_cardData = value; }
@@ -29,8 +30,8 @@ public class Card
 
     public void Execute()
     {
-        Debug.Log("Use Card In Turn: " + m_cardData.ID + 1 + " " + m_cardData.Name + " " + m_cardData.Type + " " + m_cardData.Rank + " " + m_cardData.Cost + " " + m_cardData.TargetCount + " " + m_cardData.Explanation);
-        switch (m_cardData.Type)
+        Debug.Log("Use Card In Turn: " + m_cardData.ID + 1 + " " + m_cardData.CardName + " " + m_cardData.CardType + " " + m_cardData.CardRarity + " " + m_cardData.Cost + " " + m_cardData.CardTexture + " " + m_cardData.CardText + " " + m_cardData.SkillID);
+        switch (m_cardData.CardType)
         {
             case ECardType.E_DEFAULT:
                 break;

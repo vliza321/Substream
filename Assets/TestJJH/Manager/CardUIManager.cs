@@ -11,23 +11,12 @@ public class CardUIManager : BaseManager, IsynchronizeUI
 {
     public class CardButton
     {
-        public int s_num; // πˆ∆∞ π¯»£
-        public Button s_button; // ƒ´µÂ πˆ∆∞ 
+        public int s_num; // Î≤ÑÌäº Î≤àÌò∏
+        public Button s_button; // Ïπ¥Îìú Î≤ÑÌäº 
         public Card s_card;
-        /*
-        {
-            ID = cardData.ID,
-            Name = cardData.Name,
-            Type = cardData.Type,
-            Rank = cardData.Rank,
-            Cost = cardData.Cost,
-            TargetCount = cardData.TargetCount,
-            Explanation = cardData.Explanation
-        }
-        */
         public bool s_isDrag;
         public bool s_isClick;
-        public string s_key;
+        public int s_cost;
     }
 
     private bool m_isDrag;
@@ -75,8 +64,6 @@ public class CardUIManager : BaseManager, IsynchronizeUI
         m_isDrag = false;
         m_isClick = false;
 
-        Debug.Log("CardUIManagerInitialize");
-
         m_openDeckButton.onClick.AddListener(() =>
         {
             OpenDeck();
@@ -102,7 +89,6 @@ public class CardUIManager : BaseManager, IsynchronizeUI
 
     public void Synchronization(BaseManager baseManager)
     {
-        string key = "";
         if (baseManager is CardManager cardManager)
         {
             if (cardManager.Hand.Count == 0)
@@ -121,89 +107,48 @@ public class CardUIManager : BaseManager, IsynchronizeUI
                 }
             }
 
-            //Deck ø≠∂˜ √ ±‚»≠
+            //Deck Ïó¥Îûå Ï¥àÍ∏∞Ìôî
             for (int i = 0; i < m_deckButtonGrid.transform.childCount; i++)
             {
                 m_deckButtonGrid.transform.GetChild(i).gameObject.SetActive(true);
             }
             for (int i = 0; i < cardManager.Deck.Count; i++)
             {
-                for (int k = 3; k > -1; k--)
-                {
-                    int cost = cardManager.Deck[i].CardData.Cost;
-                    int p = (int)Math.Pow(10, k);
-                    int c = cost / p;
-                    if (c == 0) key += "0";
-                    else
-                    {
-                        key += ((cardManager.Deck[i].CardData.Cost - 1) % 3).ToString();
-                        Debug.Log("key : " + key);
-                        break;
-                    }
-                }
-                m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Cost[key];
-                m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Frame[key];
-                key = "";
+                m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Cost(cardManager.Deck[i].CardData.Cost % 3);
+                m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Frame(cardManager.Deck[i].CardData.Cost % 3);
             }
             for (int i = cardManager.Deck.Count; i < m_deckButtonGrid.transform.childCount; i++)
             {
                 m_deckButtonGrid.transform.GetChild(i).gameObject.SetActive(false);
             }
 
-            //Graveyard ø≠∂˜ √ ±‚»≠
+            //Graveyard Ïó¥Îûå Ï¥àÍ∏∞Ìôî
             for (int i = 0; i < m_graveyardButtonGrid.transform.childCount; i++)
             {
                 m_graveyardButtonGrid.transform.GetChild(i).gameObject.SetActive(true);
             }
             for (int i = 0; i < cardManager.Graveyard.Count; i++)
             {
-                for (int k = 3; k > -1; k--)
-                {
-                    int cost = cardManager.Graveyard[i].CardData.Cost;
-                    int p = (int)Math.Pow(10, k);
-                    int c = cost / p;
-                    if (c == 0) key += "0";
-                    else
-                    {
-                        key += (cardManager.Graveyard[i].CardData.Cost % 3).ToString();
-                        Debug.Log("key : " + key);
-                        break;
-                    }
-                }
-                m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Cost[key];
-                m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Frame[key];
-                key = "";
+                m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Cost(cardManager.Deck[i].CardData.Cost % 3);
+                m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Frame(cardManager.Deck[i].CardData.Cost % 3); 
             }
             for (int i = cardManager.Graveyard.Count; i < m_graveyardButtonGrid.transform.childCount; i++)
             {
                 m_graveyardButtonGrid.transform.GetChild(i).gameObject.SetActive(false);
             }
 
-            //Hand ±‚¡ÿ¿∏∑Œ ƒ´µÂ ±‚¥… ¿˚øÎ
+            //Hand Í∏∞Ï§ÄÏúºÎ°ú Ïπ¥Îìú Í∏∞Îä• Ï†ÅÏö©
             for (int i = 0; i < m_cardButtons.Length; i++)
             {
                 CardButton newCardButton = new CardButton();
                 newCardButton.s_num = i;
                 newCardButton.s_button = m_cardButtons[i];
                 newCardButton.s_card = cardManager.Hand[i];
+                newCardButton.s_cost = cardManager.Hand[i].CardData.Cost;
 
-                newCardButton.s_key = "";
-                for (int k = 3; k > -1; k--)
-                {
-                    int cost = cardManager.Hand[i].CardData.Cost;
-                    int p = (int)Math.Pow(10, k);
-                    int c = cost / p;
-                    if (c == 0) newCardButton.s_key += "0";
-                    else
-                    {
-                        newCardButton.s_key += (cardManager.Hand[i].CardData.Cost % 3).ToString();
-                        Debug.Log("key : " + newCardButton.s_key);
-                        break;
-                    }
-                }
-                newCardButton.s_button.transform.GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Cost[newCardButton.s_key];
-                newCardButton.s_button.transform.GetComponent<Image>().sprite = GameManager.Instance.Card_Frame[newCardButton.s_key];
-                newCardButton.s_button.transform.GetChild(1).GetComponent<Text>().text = newCardButton.s_card.CardData.Name;
+                newCardButton.s_button.transform.GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Cost(newCardButton.s_cost % 3);
+                newCardButton.s_button.transform.GetComponent<Image>().sprite = ResourcesManager.Card_Frame(newCardButton.s_cost % 3);
+                newCardButton.s_button.transform.GetChild(1).GetComponent<Text>().text = newCardButton.s_card.CardData.CardName;
                 newCardButton.s_isDrag = false;
                 newCardButton.s_isClick = false;
                 m_cardButtonsDic.Add(i, newCardButton);
@@ -297,7 +242,6 @@ public class CardUIManager : BaseManager, IsynchronizeUI
 
     public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
     {
-        string key = "";
         foreach (var cardButton in m_cardButtonsDic)
         {
             MouseExit(cardButton.Value.s_button);
@@ -307,58 +251,30 @@ public class CardUIManager : BaseManager, IsynchronizeUI
         }
         m_cardButtonsDic.Clear();
 
-        //Deck ø≠∂˜ √ ±‚»≠
+        //Deck Ïó¥Îûå Ï¥àÍ∏∞Ìôî
         for (int i = 0; i < m_deckButtonGrid.transform.childCount; i++)
         {
             m_deckButtonGrid.transform.GetChild(i).gameObject.SetActive(true);
         }
         for (int i = 0; i < cardManager.Deck.Count; i++)
         {
-            for (int k = 3; k > -1; k--)
-            {
-                int cost = cardManager.Deck[i].CardData.Cost;
-                int p = (int)Math.Pow(10, k);
-                int c = cost / p;
-                if (c == 0) key += "0";
-                else
-                {
-                    key += (cardManager.Deck[i].CardData.Cost % 3).ToString();
-                        Debug.Log("key : " + key);
-                    break;
-                }
-            }
-            m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Cost[key];
-            m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Frame[key];
-            key = "";
+            m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Cost(cardManager.Deck[i].CardData.Cost % 3);
+            m_deckButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Frame(cardManager.Deck[i].CardData.Cost % 3);
         }
         for (int i = cardManager.Deck.Count; i < m_deckButtonGrid.transform.childCount; i++)
         {
             m_deckButtonGrid.transform.GetChild(i).gameObject.SetActive(false);
         }
 
-        //Graveyard ø≠∂˜ √ ±‚»≠
+        //Graveyard Ïó¥Îûå Ï¥àÍ∏∞Ìôî
         for (int i = 0; i < m_graveyardButtonGrid.transform.childCount; i++)
         {
             m_graveyardButtonGrid.transform.GetChild(i).gameObject.SetActive(true);
         }
         for (int i = 0; i < cardManager.Graveyard.Count; i++)
         {
-            for (int k = 3; k > -1; k--)
-            {
-                int cost = cardManager.Graveyard[i].CardData.Cost;
-                int p = (int)Math.Pow(10, k);
-                int c = cost / p;
-                if (c == 0) key += "0";
-                else
-                {
-                    key += (cardManager.Graveyard[i].CardData.Cost % 3).ToString();
-                        Debug.Log("key : " + key);
-                    break;
-                }
-            }
-            m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Cost[key];
-            m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Frame[key];
-            key = "";
+            m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Cost(cardManager.Deck[i].CardData.Cost % 3);
+            m_graveyardButtonGrid.transform.GetChild(i).GetChild(0).GetComponent<Image>().sprite =  ResourcesManager.Card_Frame(cardManager.Deck[i].CardData.Cost % 3);
         }
         for (int i = cardManager.Graveyard.Count; i < m_graveyardButtonGrid.transform.childCount; i++)
         {
@@ -403,12 +319,12 @@ public class CardUIManager : BaseManager, IsynchronizeUI
         m_masterManager.UseCard(newCardButton.s_button, newCardButton.s_card.CardData.Cost);
         m_cardButtonsDic[newCardButton.s_num].s_button.gameObject.transform.localPosition = (new Vector3(0, 0, 0));
         m_cardButtonsDic[newCardButton.s_num].s_card.Execute();
-        // graveyardø° √ﬂ∞°
+        // graveyardÏóê Ï∂îÍ∞Ä
         cardManager.Graveyard.Add(m_cardButtonsDic[newCardButton.s_num].s_card);
         m_graveyardButtonGrid.transform.GetChild(cardManager.Graveyard.Count).gameObject.SetActive(true);
-        m_graveyardButtonGrid.transform.GetChild(cardManager.Graveyard.Count).GetChild(0).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Cost[newCardButton.s_key];
-        m_graveyardButtonGrid.transform.GetChild(cardManager.Graveyard.Count).GetChild(0).GetComponent<Image>().sprite = GameManager.Instance.Card_Frame[newCardButton.s_key];
-        // handø°º≠ ªË¡¶
+        m_graveyardButtonGrid.transform.GetChild(cardManager.Graveyard.Count).GetChild(0).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Cost(newCardButton.s_cost % 3);
+        m_graveyardButtonGrid.transform.GetChild(cardManager.Graveyard.Count).GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Card_Frame(newCardButton.s_cost % 3);
+        // handÏóêÏÑú ÏÇ≠Ï†ú
         cardManager.Hand.Remove(m_cardButtonsDic[newCardButton.s_num].s_card);
 
         m_activeCardNum--;

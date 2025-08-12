@@ -4,38 +4,42 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
-public class UseCardData
+public class CharacterTableData : Unit
 {
-    public int PrototypeUnitID;
-    public int CardID;
+    public int ID;
+    public string ChracterName;
+    public int HP;
+    public int ATK;
+    public int KEF;
+    public int Speed;
+    public float CriticalRate;
+    public float CriticalDamage;
+    public int AetherRecorverPoint;
+    public string CharacterAnimationPrefab;
 }
 
 [System.Serializable]
-public class UseCardDataBase : DataScriptableObjects
+public class CharacterTableDataBase : DataScriptableObjects
 {
     [Serialize]
-    //key 는 int 형, CardData의 ID
-    public Dictionary<(int, int), UseCardData> UseCard = new Dictionary<(int, int), UseCardData>();
+    //key 는 int 형, LocalUserData의 ID
+    public Dictionary<int, CharacterTableData> CharacterTable = new Dictionary<int, CharacterTableData>();
 
 
-    public List<UseCardData> UseCardList = new List<UseCardData>();
+    public List<CharacterTableData> CharacterTableList = new List<CharacterTableData>();
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;
-        foreach (var data in UseCardList)
+        foreach (var data in CharacterTableList)
         {
-            var key = (data.PrototypeUnitID, data.CardID);
-            if (UseCard.TryAdd(key, data))
-            {
-                result = false;
-            }
+            CharacterTable.Add(data.ID, data);
         }
         return result;
     }
 
     public override void TranslateDicToListAtSaveDatas(int SelectUserID)
     {
-        foreach (var data in UseCardList)
+        foreach (var data in CharacterTableList)
         {
             //딕셔너리 데이터를 리스트로 재저장하여 수정
             //수정할 데이터는 key값이 아닌 모든 값
@@ -60,7 +64,7 @@ public class UseCardDataBase : DataScriptableObjects
 
     public override void ClearContainer()
     {
-        UseCardList.Clear();
-        UseCard.Clear();
+        CharacterTableList.Clear();
+        CharacterTable.Clear();
     }
 }
