@@ -6,12 +6,14 @@ public abstract class DataScriptableObjects
 {
     public abstract bool TranslateListToDic(int SelectUserID);
     public abstract void TranslateDicToListAtSaveDatas(int SelectUserID);
+    public abstract void ClearContainer();
 }
 
 [System.Serializable]
 public enum ECardType
 {
     E_DEFAULT = 0,
+    E_ATTACK,
     E_SKILL
 }
 
@@ -39,11 +41,26 @@ public enum ECardSkillSource
 {
     E_DEFAULT = 0,
     E_ATK,
-    E_BLEED,
-    E_DAMAGE_INFLICTED,
+    E_DAMAGED_INFLICTED,
     E_AETHER,
     E_DECK,
     E_DEFENSE
+}
+
+[System.Serializable]
+public enum ECardSkillStatusType
+{
+    E_NONE = 0,
+    E_BLEED,
+}
+
+[System.Serializable]
+public enum ECardSkillTargetType
+{
+    E_NONE = 0,
+    E_SELF,
+    E_SINGLE_ALLY,
+    E_MULTI_ENEMY,
 }
 
 public enum ETickTrigger
