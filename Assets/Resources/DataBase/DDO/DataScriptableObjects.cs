@@ -62,6 +62,7 @@ public enum ECardSkillTargetType
     E_SINGLE_ALLY,
     E_MULTI_ENEMY,
 }
+
 public enum ETickTrigger
 {
     E_DEFAULT = 0,

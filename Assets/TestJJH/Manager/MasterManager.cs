@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 public class MasterManager : MonoBehaviour
 {
-#if true
     private LinkedList<IUpdatableManager> m_IUpdatableManagers;
     [SerializeField]
     private CharacterManager m_characterManager;
@@ -19,14 +18,16 @@ public class MasterManager : MonoBehaviour
     [SerializeField]
     private CardUIManager m_cardUIManager;
     [SerializeField]
+
     private MonsterManager m_monsterManager;
     [SerializeField]
     private MonsterUIManager m_monsterUIManager;
 
     private LinkedList<BaseManager> m_managers;
-#endif
+
     [SerializeField]
     private DontDestroyOnLoadManager DDOManager;
+
 
     public void Awake()
     {
@@ -49,6 +50,7 @@ public class MasterManager : MonoBehaviour
             BaseManager temtManager;
             if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
             temtManager.ConnectsDataBase();
+
         }
 
         for (LinkedListNode<BaseManager> node = m_managers.First; node != null; node = node.Next)
@@ -76,8 +78,10 @@ public class MasterManager : MonoBehaviour
         {
             node.Value.SetTurn(m_turnManager,m_characterManager, m_monsterManager, m_cardManager);
         }
+
         m_turnUIManager.Synchronization(m_turnManager);
         m_cardUIManager.Synchronization(m_cardManager);
+
     }
 
     public void UseCard(Button card, int Cost)

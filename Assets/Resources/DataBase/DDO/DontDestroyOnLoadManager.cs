@@ -7,17 +7,16 @@ using UnityEngine.SocialPlatforms.Impl;
 [System.Serializable]
 public class DontDestroyOnLoadManager : MonoBehaviour
 {
-#if true
     private static DontDestroyOnLoadManager instance;
 
     public static DontDestroyOnLoadManager Instance
     {
         get
         {
-            if (instance == null)
+            if(instance == null)
             {
                 instance = FindObjectOfType<DontDestroyOnLoadManager>();
-                if (instance == null)
+                if(instance == null)
                 {
                     GameObject NewDontDestroyOnLoadManager = new GameObject();
                     instance = NewDontDestroyOnLoadManager.AddComponent<DontDestroyOnLoadManager>();
@@ -41,9 +40,7 @@ public class DontDestroyOnLoadManager : MonoBehaviour
 
     private Dictionary<string, DataScriptableObjects> m_DataBase;
 #endif
-    /// <summary>
-    /// 데이터 베이스 클래스 선언
-    /// </summary>
+
     [SerializeField]
     private CardTableDataBase m_cardTable;
     [SerializeField]
@@ -57,9 +54,7 @@ public class DontDestroyOnLoadManager : MonoBehaviour
     [SerializeField]
     private UseCardDataBase m_useCard;
 
-    /// <summary>
-    /// 데이터 베이스 클래스 GETTER 선언 및 정의
-    /// </summary>
+
     public CardTableDataBase CardTableDataBase { get => m_cardTable; }
     public CardSkillTableDataBase CardSkillTableDataBase { get => m_cardSkillTable; }
     public CharacterTableDataBase CharacterTableDataBase { get => m_CharacterTable; }
@@ -67,9 +62,6 @@ public class DontDestroyOnLoadManager : MonoBehaviour
     public StatusEffectDataBase StatusEffectDataBase { get => m_statusEffect; }
     public UseCardDataBase UseCardDataBase { get => m_useCard; }
 
-    /// <summary>
-    /// 데이터 베이스에서 기본키를 기준으로 쿼리한 값을 반환
-    /// </summary>
     public CardTableData CardTable(int ID)
     {
         return m_cardTable.CardTable[ID];
@@ -96,20 +88,9 @@ public class DontDestroyOnLoadManager : MonoBehaviour
         return m_useCard.UseCard[key];
     }
 
-
     private void Awake()
     {
-        /*
-        if (instance == null)
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-            Initialize();
-        }
-        else
-        {
-            Destroy(gameObject); // 중복 생성 방지
-        }*/
+
     }
 
     public void Initialize()
@@ -124,10 +105,9 @@ public class DontDestroyOnLoadManager : MonoBehaviour
             Destroy(gameObject); // 중복 생성 방지
         }
 
-        //데이터 베이스 집합 딕셔너리 정의
+        
         m_DataBase = new Dictionary<string, DataScriptableObjects>();
 
-        //데이터 베이스 테이블 정의
         m_cardSkillTable = new CardSkillTableDataBase();
         m_cardTable = new CardTableDataBase();
         m_CharacterTable = new CharacterTableDataBase();
@@ -135,7 +115,6 @@ public class DontDestroyOnLoadManager : MonoBehaviour
         m_statusEffect = new StatusEffectDataBase();
         m_useCard = new UseCardDataBase();
 
-        //데이터 베이스 테이블을 데이터 베이스에 추가
         m_DataBase.Add("CardSkillTable", m_cardSkillTable);
         m_DataBase.Add("CardTable", m_cardTable);
         m_DataBase.Add("CharacterTable", m_CharacterTable);
@@ -143,7 +122,6 @@ public class DontDestroyOnLoadManager : MonoBehaviour
         m_DataBase.Add("StatusEffect", m_statusEffect);
         m_DataBase.Add("UseCard", m_useCard);
 
-        //데이터 베이스의 테이블 초기화
         foreach (var DB in m_DataBase)
         {
             DB.Value.ClearContainer();
@@ -167,7 +145,6 @@ public class DontDestroyOnLoadManager : MonoBehaviour
         m_CSVManager.Initialize(m_DataBase);
         m_ResourceManager.Initialize();
 
-        //각 테이블의 리스트 테이블을 딕셔너리 테이블로 변형
         foreach(var DB in  m_DataBase)
         {
             DB.Value.TranslateListToDic(m_ResourceManager.SelectUserID);
@@ -176,7 +153,6 @@ public class DontDestroyOnLoadManager : MonoBehaviour
 
     public bool saveData()
     {
-        //각 테이블의 리스트 테이블을 딕셔너리 테이블로 변형
         foreach (var DB in m_DataBase)
         {
             DB.Value.TranslateDicToListAtSaveDatas(m_ResourceManager.SelectUserID);

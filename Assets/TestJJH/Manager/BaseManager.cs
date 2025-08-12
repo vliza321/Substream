@@ -6,7 +6,6 @@ public abstract class BaseManager : AccessableDataBase
 {
     protected MasterManager m_masterManager;
 
-    // 최초 초기화시 호출
     public abstract void Initialize(MasterManager masterManager, TurnManager turnManager);
 
     // 데이터 초기화시 호출

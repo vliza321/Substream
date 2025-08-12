@@ -29,7 +29,6 @@ public class CharacterManager : BaseManager
     public override void DataInitialize(TurnManager turnManager, CharacterManager charcterManager, MonsterManager monsterManager)
     {
         m_partyNumber = 4;
-        // 임시 파티 데이터 : 1,2,3,4 4명
         m_character.AddLast(DataBase.Character(1));
         m_character.AddLast(DataBase.Character(2));
         m_character.AddLast(DataBase.Character(3));
@@ -43,7 +42,7 @@ public class CharacterManager : BaseManager
 
     public void SetHealthPoint(int position, float damage)
     {
-        Debug.Log($"Character[{position}] 가 {damage}의 데미지를 입음");
+        Debug.Log($"Character[{position}] 媛 {damage}???곕?吏瑜??낆쓬");
         //실제 대미지 적용
         /*m_character[position].HealthPoint -= damage;
         if (m_character[position].HealthPoint < 0)

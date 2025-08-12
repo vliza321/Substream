@@ -37,7 +37,7 @@ public class CardManager : BaseManager
 
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
-        /***************↓Test Code about Struct↓***************/
+        /***************test Code about Struct**************/
         tcs_hand = new UnitCardPair();
         tcs_hand.s_card = new List<Card>();
 
@@ -83,7 +83,6 @@ public class CardManager : BaseManager
         tcs_hand.s_unit = turnManager.CurrentTurnUnit;
         Unit key = tcs_hand.s_unit;
 
-        // 핸드 패 새로 생성
         if (tcs_deck[key].Count < 6)
         {
             foreach (var d in tcs_deck[key])
@@ -107,7 +106,6 @@ public class CardManager : BaseManager
             }
         }
 
-        // 패 배분이 끝나고 덱이 비어있으면 다시 채움
         if (tcs_deck[key].Count < 1)
         {
             foreach (var g in tcs_graveyard[key])

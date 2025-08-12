@@ -19,7 +19,6 @@ public class MonsterManager : BaseManager
 
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
-        // 임시 몬스터 데이터 : 1마리
         for (int i = 0; i < 1; i++)
         {
             MonsterData monster = new MonsterData();
@@ -27,6 +26,7 @@ public class MonsterManager : BaseManager
             monster.PrototypeUnitID = i;
             monster.InstanceID = 0;
             monster.Speed = 9;
+
             
             m_monster.AddLast(monster);
         }

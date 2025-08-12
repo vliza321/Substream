@@ -57,7 +57,6 @@ public class UseCardDataBase : DataScriptableObjects
             */
         }
     }
-
     public override void ClearContainer()
     {
         UseCardList.Clear();

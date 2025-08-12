@@ -89,6 +89,7 @@ public class TurnUIManager : BaseManager, IsynchronizeUI
         m_turnText.text = m_stringBuilder.ToString();
     }
 
+
     public void SetPortrait(TurnManager turnManager)
     {
         for (int i = turnManager.Units.Count + 1; i < OrderByTurnSpeedImage.Count; i++)

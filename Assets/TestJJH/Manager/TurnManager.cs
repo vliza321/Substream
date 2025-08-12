@@ -40,8 +40,6 @@ public class TurnManager : BaseManager
         m_units = new LinkedList<Unit>();
     }
 
-
-    /// <summary>
     /// 유닛의 속도 용어 정리
     /// Speed는 기본 속도
     /// UnitSpeed는 인플레이 속도(즉, 가변 가능한 변수)
@@ -85,11 +83,11 @@ public class TurnManager : BaseManager
             int cmp = b.UnitSpeed.CompareTo(a.UnitSpeed);
             if (cmp == 0)
             {
-                // UnitSpeed가 같으면 랜덤으로 순서 결정
-                return Random.Range(-1, 2); // -1, 0, 1 중 하나 반환
+                return Random.Range(-1, 2); // -1, 0, 1 以??섎굹 諛섑솚
             }
             return cmp;
         });
+
 
         m_units.Clear();
         foreach (var unit in units)
