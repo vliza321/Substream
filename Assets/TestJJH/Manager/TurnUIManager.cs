@@ -23,13 +23,14 @@ public class TurnUIManager : BaseManager, IsynchronizeUI
     private StringBuilder m_stringBuilder = new StringBuilder(32);
 
     private List<UnitPortraitPair> m_unitPortraitPair;
-
+    [SerializeField]
+    private TurnManager m_turnManager;
     // Start is called before the first frame update
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager) 
+    public override void Initialize(MasterManager masterManager) 
     {
         m_unitPortraitPair = new List<UnitPortraitPair>();
         m_masterManager = masterManager;
-        SetTurnEtherInfo(turnManager);
+        SetTurnEtherInfo(m_turnManager);
         m_turnEndButton.onClick.AddListener(() => {
             m_masterManager.SetTurn();
         });  

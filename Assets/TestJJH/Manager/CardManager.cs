@@ -25,7 +25,7 @@ public class CardManager : BaseManager
     {
         get { return m_graveyard[m_hand.s_unit]; }
     }
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
     }

@@ -13,7 +13,7 @@ public class CharacterManager : BaseManager
         get { return m_character; }
     }
 
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
 

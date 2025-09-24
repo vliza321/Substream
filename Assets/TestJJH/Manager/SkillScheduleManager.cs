@@ -21,7 +21,7 @@ public class SkillScheduleManager : BaseManager, IUpdatableManager
         m_unitSkillScheduler.RegisteSkill(unit, cardSkill, Card);
     }
 
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
 
@@ -32,8 +32,8 @@ public class SkillScheduleManager : BaseManager, IUpdatableManager
 
         m_currentSkillScheduler = m_cardSkillScheduler;
 
-        m_cardSkillScheduler.Initialize(masterManager, turnManager);
-        m_unitSkillScheduler.Initialize(masterManager, turnManager);
+        m_cardSkillScheduler.Initialize(masterManager);
+        m_unitSkillScheduler.Initialize(masterManager);
     }
 
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)

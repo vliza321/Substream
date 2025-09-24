@@ -6,7 +6,7 @@ public abstract class BaseManager : AccessableDataBase
 {
     protected MasterManager m_masterManager;
 
-    public abstract void Initialize(MasterManager masterManager, TurnManager turnManager);
+    public abstract void Initialize(MasterManager masterManager);
 
     // 데이터 초기화시 호출
     public virtual void DataInitialize(TurnManager turnManager, CharacterManager characterManager , MonsterManager monsterManager)

@@ -52,7 +52,7 @@ public class MasterManager : MonoBehaviour
         
         for (LinkedListNode<BaseManager> node = m_managers.First; node != null; node = node.Next)
         {
-            node.Value.Initialize(this, m_turnManager);
+            node.Value.Initialize(this);
             BaseManager temtManager;
             if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
             temtManager.ConnectsDataBase();

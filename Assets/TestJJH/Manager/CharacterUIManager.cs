@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,7 +9,7 @@ public class CharacterUIManager : BaseManager, IsynchronizeUI
     [SerializeField]
     private Slider[] m_characterHealthPoint;
     private int s_AttackPosition;
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
         s_AttackPosition = 50;

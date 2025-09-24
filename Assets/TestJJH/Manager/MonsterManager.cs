@@ -10,7 +10,7 @@ public class MonsterManager : BaseManager
     {
         get { return m_monster; }
     }
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
 

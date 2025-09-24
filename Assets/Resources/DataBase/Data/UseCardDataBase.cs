@@ -13,10 +13,8 @@ public class UseCardData
 [System.Serializable]
 public class UseCardDataBase : DataScriptableObjects
 {
-    [Serialize]
     //key 는 int 형, CardData의 ID
     public Dictionary<(int, int), UseCardData> UseCard = new Dictionary<(int, int), UseCardData>();
-
 
     public List<UseCardData> UseCardList = new List<UseCardData>();
     public override bool TranslateListToDic(int SelectUserID)

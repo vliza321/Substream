@@ -8,7 +8,7 @@ public class MonsterUIManager : BaseManager, IsynchronizeUI
 {
     [SerializeField]
     private Slider[] m_characterHealthPoint;
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
 
     }

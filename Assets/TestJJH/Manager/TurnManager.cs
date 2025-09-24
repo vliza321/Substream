@@ -31,7 +31,7 @@ public class TurnManager : BaseManager
         get { return m_units; }
     }
 
-    public override void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
         m_turnCount = 1;

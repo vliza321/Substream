@@ -7,7 +7,7 @@ public interface ISkillScheduler
     public Unit Caster();
     public bool SkillQueueIsEmpty();
     public void RegisteSkill(Unit unit, CardSkillTableData cardSkill, CardTableData Card);
-    public void Initialize(MasterManager masterManager, TurnManager turnManager);
+    public void Initialize(MasterManager masterManager);
     public void Execute();
     public void Enter();
     public void Exit();
@@ -41,7 +41,7 @@ public class CardSkillScheduler : ISkillScheduler
         m_currentSkill = NULLSKILL;
     }
 
-    public void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
     }
@@ -116,7 +116,7 @@ public class UnitSkillScheduler : ISkillScheduler
         m_currentSkill = NULLSKILL;
     }
 
-    public void Initialize(MasterManager masterManager, TurnManager turnManager)
+    public void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
     }
