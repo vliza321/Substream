@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CardManager : BaseManager
+public class CardManager : BaseSystem
 {
     struct UnitCardPair
     {
@@ -25,9 +25,17 @@ public class CardManager : BaseManager
     {
         get { return m_graveyard[m_hand.s_unit]; }
     }
+
+    [SerializeField]
+    private int m_activeCardNum;
+    public int ActiveCardNum
+    {
+        get { return m_activeCardNum; }
+    }
     public override void Initialize(MasterManager masterManager)
     {
         m_masterManager = masterManager;
+        m_activeCardNum = 5;
     }
 
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
@@ -59,14 +67,6 @@ public class CardManager : BaseManager
             m_graveyard.Add(pair.s_unit,new List<Card>());
         }
         HandShaker(turnManager);
-    }
-
-    public override void Synchronization(BaseManager baseManager)
-    {
-        if (baseManager != null)
-        {
-            m_UIManager.Synchronization(this);
-        }
     }
 
     public void HandShaker(TurnManager turnManager)
@@ -116,6 +116,8 @@ public class CardManager : BaseManager
             }
             m_graveyard[key].Clear();
         }
+
+        m_activeCardNum = m_hand.s_card.Count;
     }
 
     public override void SetTurn(TurnManager turnManager, CardManager cardManager)
@@ -132,12 +134,8 @@ public class CardManager : BaseManager
         m_graveyard.Remove(unit);
     }
 
-    public int ActiveCardNum()
+    public void UseCard()
     {
-        if(m_UIManager is CardUIManager cardUIManager)
-        {
-            return cardUIManager.ActiveCardNum;
-        }
-        return 0;
+        m_activeCardNum--;
     }
 }

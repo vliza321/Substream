@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class TurnManager : BaseManager
+public class TurnManager : BaseSystem
 {
     private int m_turnCount;
     private int m_etherCount;
@@ -97,13 +97,6 @@ public class TurnManager : BaseManager
 
         m_currentTurnUnit = m_units.First.Value;
         m_units.RemoveFirst();
-    }
-    public override void Synchronization(BaseManager baseManager)
-    {
-        if (baseManager != null)
-        {
-            m_UIManager.Synchronization(this);
-        }
     }
 
     public override void SetTurn(TurnManager turnManager, CardManager cardManager)

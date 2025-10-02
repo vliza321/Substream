@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterManager : BaseManager
+public class MonsterManager : BaseSystem
 {
     private LinkedList<Unit> m_monster;
 
@@ -29,14 +29,6 @@ public class MonsterManager : BaseManager
 
             
             m_monster.AddLast(monster);
-        }
-    }
-
-    public override void Synchronization(BaseManager baseManager)
-    {
-        if (baseManager != null)
-        {
-            m_UIManager.Synchronization(this);
         }
     }
 

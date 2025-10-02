@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillScheduleManager : BaseManager, IUpdatableManager
+public class SkillScheduleManager : BaseSystem, IUpdatableManager
 {
     private CardSkillScheduler m_cardSkillScheduler;
     private UnitSkillScheduler m_unitSkillScheduler;
@@ -34,14 +34,6 @@ public class SkillScheduleManager : BaseManager, IUpdatableManager
 
         m_cardSkillScheduler.Initialize(masterManager);
         m_unitSkillScheduler.Initialize(masterManager);
-    }
-
-    public override void Synchronization(BaseManager baseManager)
-    {
-        if (m_UIManager != null)
-        {
-            m_UIManager.Synchronization(this);
-        }
     }
 
     public void Execute()

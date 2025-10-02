@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Text;
 using Unity.Mathematics;
 
-public class TurnUIManager : BaseManager
+public class TurnUIManager : BaseUI<TurnManager>
 {
     public struct UnitPortraitPair
     {
@@ -56,55 +56,51 @@ public class TurnUIManager : BaseManager
             m_unitPortraitPair.Add(pair);
             i++;
         }
-        SetPortrait(turnManager);
     }
 
-    public override void Synchronization(BaseManager baseManager)
+    public override void Synchronization()
     {
-        if (baseManager is TurnManager turnManager)
-        {
-            SetTurnEtherInfo(turnManager);
-            SetPortrait(turnManager);
-        }
+        SetTurnEtherInfo();
+        SetPortrait();
     }
 
     public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
-        SetTurnEtherInfo(turnManager);
-        SetPortrait(turnManager);
+        SetTurnEtherInfo();
+        SetPortrait();
     }
 
-    public void SetTurnEtherInfo(TurnManager turnManager)
+    public void SetTurnEtherInfo()
     {
         m_stringBuilder.Clear();
         m_stringBuilder
             .Append("Turn")
-            .Append(turnManager.TurnCount)
+            .Append(m_model.TurnCount)
             .Append("\n")
-            .Append(turnManager.EtherCount)
+            .Append(m_model.EtherCount)
             .Append(" / 15");
 
         m_turnText.text = m_stringBuilder.ToString();
     }
 
 
-    public void SetPortrait(TurnManager turnManager)
+    public void SetPortrait()
     {
-        for (int i = turnManager.Units.Count + 1; i < OrderByTurnSpeedImage.Count; i++)
+        for (int i = m_model.Units.Count + 1; i < OrderByTurnSpeedImage.Count; i++)
         {
             OrderByTurnSpeedImage[i].gameObject.SetActive(false);
         }
         int j = 0;
         foreach (var unitPortraitPair in m_unitPortraitPair)
         {
-            if (turnManager.CurrentTurnUnit.Equals(unitPortraitPair.s_unit))
+            if (m_model.CurrentTurnUnit.Equals(unitPortraitPair.s_unit))
             {
                 unitPortraitPair.s_portrait.transform.SetAsFirstSibling();
                 j++;
                 break;
             }
         }
-        foreach (var unitdata in turnManager.Units)
+        foreach (var unitdata in m_model.Units)
         {
             foreach (var unitPortraitPair in m_unitPortraitPair)
             {

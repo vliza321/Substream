@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class CharacterUIManager : BaseManager
+public class CharacterUIManager : BaseUI<CharacterManager>
 {
     [SerializeField]
     private Slider[] m_characterHealthPoint;
@@ -30,16 +30,13 @@ public class CharacterUIManager : BaseManager
         }
     }
 
-    public override void Synchronization(BaseManager baseManager)
+    public override void Synchronization()
     {
-        if (baseManager is CharacterManager characterManager)
+        int a = 0;
+        foreach (var character in m_model.Character)
         {
-            int a = 0;
-            foreach (var character in characterManager.Character)
-            {
-                m_characterHealthPoint[a].value -= character.ID;
-                a++;
-            }
+            m_characterHealthPoint[a].value -= character.ID;
+            a++;
         }
     }
 

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterManager : BaseManager
+public class CharacterManager : BaseSystem
 {
     private LinkedList<CharacterTableData> m_character;
 
@@ -33,14 +33,6 @@ public class CharacterManager : BaseManager
         m_character.AddLast(DataBase.Character(2));
         m_character.AddLast(DataBase.Character(3));
         m_character.AddLast(DataBase.Character(4));
-    }
-
-    public override void Synchronization(BaseManager baseManager)
-    {
-        if (baseManager != null)
-        {
-            m_UIManager.Synchronization(this);
-        }
     }
 
     public override void SetTurn(TurnManager turnManager, CardManager cardManager)
