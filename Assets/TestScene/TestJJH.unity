@@ -2501,6 +2501,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2da9df9bd2ebb8d499d59d626ab34335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 173460707}
   m_characterHealthPoint:
   - {fileID: 183264851}
 --- !u!223 &173460708
@@ -3588,6 +3589,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf0039af0722a484b87af27313752479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 220018831}
   m_cardGrid: {fileID: 1378274342}
   m_openDeckButton: {fileID: 786201759}
   m_closeDeckButton: {fileID: 1811796675}
@@ -6694,6 +6696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b200bc8b245e33a43908322f5a146d14, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 0}
   SKILLOPERATETIME: 1
 --- !u!224 &471207497
 RectTransform:
@@ -10632,6 +10635,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e07c7b72972f384abb94ee0b1b7fe2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 819061638}
 --- !u!1 &748161204
 GameObject:
   m_ObjectHideFlags: 0
@@ -12315,6 +12319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92652c2bd22b3c946b2ca0cf4aba44b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 819061638}
   m_characterHealthPoint:
   - {fileID: 123091707}
   - {fileID: 1539695025}
@@ -15133,7 +15138,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1001470331}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2c8702ddd8c16c47b3e1dad41294d34, type: 3}
+  m_Script: {fileID: 11500000, guid: 026be4fe6d4a05d41934b2e5a683933b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!4 &1001470333
@@ -18396,6 +18401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1d59ff19dd88cb41be7a024dbb918b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 1238551990}
   OrderByTurnSpeedImage:
   - {fileID: 1068165290}
   - {fileID: 1342061487}
@@ -18406,7 +18412,6 @@ MonoBehaviour:
   - {fileID: 1169430187}
   m_turnEndButton: {fileID: 280929720}
   m_turnText: {fileID: 206123134}
-  m_turnManager: {fileID: 1391298754}
 --- !u!4 &1238551991
 Transform:
   m_ObjectHideFlags: 0
@@ -20232,6 +20237,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9aa57dd857db6c4aa680c5ee87820a9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 1238551990}
 --- !u!4 &1391298755
 Transform:
   m_ObjectHideFlags: 0
@@ -21679,6 +21685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 151e77f7a001df247b4c0561a23740ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 220018831}
 --- !u!4 &1508023399
 Transform:
   m_ObjectHideFlags: 0
@@ -27905,15 +27912,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_characterManager: {fileID: 743358465}
-  m_characterUIManager: {fileID: 819061638}
   m_turnManager: {fileID: 1391298754}
-  m_turnUIManager: {fileID: 1238551990}
   m_cardManager: {fileID: 1508023398}
-  m_cardUIManager: {fileID: 220018831}
   m_monsterManager: {fileID: 2087030769}
-  m_monsterUIManager: {fileID: 173460707}
   m_skillScheduleManager: {fileID: 471207496}
-  DDOManager: {fileID: 1380679653}
+  DataBaseManager: {fileID: 1380679653}
 --- !u!1 &1891183686
 GameObject:
   m_ObjectHideFlags: 0
@@ -31202,6 +31205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5316f48099223b47b3241327923bb6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_UIManager: {fileID: 173460707}
 --- !u!1 &2106538523
 GameObject:
   m_ObjectHideFlags: 0
@@ -31635,8 +31639,8 @@ SceneRoots:
   - {fileID: 1001470333}
   - {fileID: 1644074862}
   - {fileID: 1884505568}
-  - {fileID: 220018830}
   - {fileID: 1508023399}
+  - {fileID: 220018830}
   - {fileID: 1391298755}
   - {fileID: 1238551991}
   - {fileID: 743358463}

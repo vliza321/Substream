@@ -32,7 +32,6 @@ public class CardManager : BaseManager
 
     public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
     {
-        /***************test Code about Struct**************/
         m_hand = new UnitCardPair();
         m_hand.s_card = new List<Card>();
 
@@ -59,10 +58,18 @@ public class CardManager : BaseManager
             m_deck.Add(pair.s_unit,pair.s_card);
             m_graveyard.Add(pair.s_unit,new List<Card>());
         }
-        HandShaker(turnManager,characterManager);
+        HandShaker(turnManager);
     }
 
-    public void HandShaker(TurnManager turnManager, CharacterManager characterManager)
+    public override void Synchronization(BaseManager baseManager)
+    {
+        if (baseManager != null)
+        {
+            m_UIManager.Synchronization(this);
+        }
+    }
+
+    public void HandShaker(TurnManager turnManager)
     {
         foreach(var g in m_hand.s_card)
         {
@@ -111,9 +118,9 @@ public class CardManager : BaseManager
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
+    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
-        HandShaker(turnManager, characterManager);
+        HandShaker(turnManager);
     }
 
     public void CharacterDying(Unit unit)
@@ -123,5 +130,14 @@ public class CardManager : BaseManager
 
         m_deck.Remove(unit);
         m_graveyard.Remove(unit);
+    }
+
+    public int ActiveCardNum()
+    {
+        if(m_UIManager is CardUIManager cardUIManager)
+        {
+            return cardUIManager.ActiveCardNum;
+        }
+        return 0;
     }
 }

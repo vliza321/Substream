@@ -32,7 +32,15 @@ public class MonsterManager : BaseManager
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
+    public override void Synchronization(BaseManager baseManager)
+    {
+        if (baseManager != null)
+        {
+            m_UIManager.Synchronization(this);
+        }
+    }
+
+    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
        
     }

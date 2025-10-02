@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class CharacterUIManager : BaseManager, IsynchronizeUI
+public class CharacterUIManager : BaseManager
 {
     [SerializeField]
     private Slider[] m_characterHealthPoint;
@@ -30,7 +30,7 @@ public class CharacterUIManager : BaseManager, IsynchronizeUI
         }
     }
 
-    public void Synchronization(BaseManager baseManager)
+    public override void Synchronization(BaseManager baseManager)
     {
         if (baseManager is CharacterManager characterManager)
         {
@@ -43,7 +43,7 @@ public class CharacterUIManager : BaseManager, IsynchronizeUI
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager,  CardManager cardManager)
+    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
 
     }

@@ -35,14 +35,21 @@ public class CharacterManager : BaseManager
         m_character.AddLast(DataBase.Character(4));
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
+    public override void Synchronization(BaseManager baseManager)
+    {
+        if (baseManager != null)
+        {
+            m_UIManager.Synchronization(this);
+        }
+    }
+
+    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
 
     }
 
     public void SetHealthPoint(int position, float damage)
     {
-        Debug.Log($"Character[{position}] 媛 {damage}???곕?吏瑜??낆쓬");
         //실제 대미지 적용
         /*m_character[position].HealthPoint -= damage;
         if (m_character[position].HealthPoint < 0)

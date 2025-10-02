@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Text;
 using Unity.Mathematics;
 
-public class TurnUIManager : BaseManager, IsynchronizeUI
+public class TurnUIManager : BaseManager
 {
     public struct UnitPortraitPair
     {
@@ -23,14 +23,13 @@ public class TurnUIManager : BaseManager, IsynchronizeUI
     private StringBuilder m_stringBuilder = new StringBuilder(32);
 
     private List<UnitPortraitPair> m_unitPortraitPair;
-    [SerializeField]
-    private TurnManager m_turnManager;
-    // Start is called before the first frame update
+
+
     public override void Initialize(MasterManager masterManager) 
     {
         m_unitPortraitPair = new List<UnitPortraitPair>();
         m_masterManager = masterManager;
-        SetTurnEtherInfo(m_turnManager);
+
         m_turnEndButton.onClick.AddListener(() => {
             m_masterManager.SetTurn();
         });  
@@ -60,10 +59,8 @@ public class TurnUIManager : BaseManager, IsynchronizeUI
         SetPortrait(turnManager);
     }
 
-    public void Synchronization(BaseManager baseManager)
+    public override void Synchronization(BaseManager baseManager)
     {
-        if (Input.GetKeyDown(KeyCode.Escape)) { }
-
         if (baseManager is TurnManager turnManager)
         {
             SetTurnEtherInfo(turnManager);
@@ -71,7 +68,7 @@ public class TurnUIManager : BaseManager, IsynchronizeUI
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
+    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
         SetTurnEtherInfo(turnManager);
         SetPortrait(turnManager);

@@ -36,14 +36,12 @@ public class SkillScheduleManager : BaseManager, IUpdatableManager
         m_unitSkillScheduler.Initialize(masterManager);
     }
 
-    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
+    public override void Synchronization(BaseManager baseManager)
     {
-        
-    }
-
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
-    {
-        
+        if (m_UIManager != null)
+        {
+            m_UIManager.Synchronization(this);
+        }
     }
 
     public void Execute()
@@ -54,8 +52,14 @@ public class SkillScheduleManager : BaseManager, IUpdatableManager
             m_unitSkillScheduler.SkillQueueIsEmpty()) 
             return;
 
-        if (!m_cardSkillScheduler.SkillQueueIsEmpty()) m_currentSkillScheduler = m_cardSkillScheduler;
-        if (!m_unitSkillScheduler.SkillQueueIsEmpty()) m_currentSkillScheduler = m_unitSkillScheduler;
+        if (!m_cardSkillScheduler.SkillQueueIsEmpty())
+        {
+            m_currentSkillScheduler = m_cardSkillScheduler; 
+        }
+        if (!m_unitSkillScheduler.SkillQueueIsEmpty())
+        {
+            m_currentSkillScheduler = m_unitSkillScheduler; 
+        }
 
         //dont have a current registered skill
         if (m_currentSkillScheduler.Caster() == null)

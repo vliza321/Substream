@@ -98,8 +98,15 @@ public class TurnManager : BaseManager
         m_currentTurnUnit = m_units.First.Value;
         m_units.RemoveFirst();
     }
+    public override void Synchronization(BaseManager baseManager)
+    {
+        if (baseManager != null)
+        {
+            m_UIManager.Synchronization(this);
+        }
+    }
 
-    public override void SetTurn(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager, CardManager cardManager)
+    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
     {
         int pos = m_units.Count - (int)(m_currentTurnUnit.UnitSpeed + 20) / 20 + 1;
         List<Unit> units = new List<Unit>();
