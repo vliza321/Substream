@@ -5,14 +5,14 @@ using UnityEngine.EventSystems;
 
 public class Monster
 {
-    private MonsterData m_monsterData;
+    private MonsterTableData m_monsterData;
 
-    public void Initialize(MonsterData monsterData)
+    public void Initialize(MonsterTableData monsterData)
     {
         m_monsterData = monsterData;
     }
 
-    public MonsterData MonsterData
+    public MonsterTableData MonsterData
     {
         get { return m_monsterData; }
         set { m_monsterData = value; }

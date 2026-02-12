@@ -8,41 +8,44 @@ public class CharacterUIManager : BaseUI<CharacterManager>
 {
     [SerializeField]
     private Slider[] m_characterHealthPoint;
+    private Dictionary<int, Slider> m_characterHealthPointDic;
     private int s_AttackPosition;
-    public override void Initialize(MasterManager masterManager)
+    public override void Initialize()
     {
-        m_masterManager = masterManager;
         s_AttackPosition = 50;
     }
 
-    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
+    public override void DataInitialize()
     {
         int c = 0;
-        foreach(var character in characterManager.Character)
+        foreach(var character in m_model.Units)
         {
-            m_characterHealthPoint[c].maxValue = character.HP;
+            m_characterHealthPoint[c].maxValue = character.BaseHP;
             m_characterHealthPoint[c].value = m_characterHealthPoint[c].maxValue;
             c++;
         }
-        for (int i = characterManager.Character.Count; i < 4; i++)
-        {
-            m_characterHealthPoint[i].gameObject.SetActive(false);
-        }
     }
 
-    public override void Synchronization()
+    public override void UseCard(Card card)
     {
         int a = 0;
-        foreach (var character in m_model.Character)
+        foreach (var character in m_model.Units)
         {
-            m_characterHealthPoint[a].value -= character.ID;
-            a++;
+
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
+    public void TurnOffHPSlider(bool isCharacter, int exceptionID)
     {
-
+        int count = 0;
+        foreach (var character in m_characterHealthPoint)
+        {
+            if(exceptionID == count && isCharacter)
+                character.transform.GetChild(1).gameObject.SetActive(true);
+            else 
+                character.transform.GetChild(1).gameObject.SetActive(false);
+            count++;
+        }
     }
 
     public void SetHealthPoint(int position, CharacterManager characterManager)

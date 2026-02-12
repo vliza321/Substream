@@ -2,16 +2,24 @@ ID,Name,CardType,CardRarity,Cost,CardText,Texture,SkillID
 1,Card1,E_ATTACK,E_NORMAL,1,"적 1명에게 공격력의 100%의 피해를 입힌다.",Card1Texture,1
 2,Card2,E_ATTACK,E_NORMAL,2,"적 3명에게 공격력의 150%의 피해를 입힌다.",Card2Texture,2
 3,Card3,E_ATTACK,E_RARE,2,"적 1명에게 공격력의 200%의 피해를 입힌다.",Card3Texture,3
-4,Card4,E_ATTACK,E_SUPERRARE,4,"적 3명에게 공격력의 150%의 피해를 입히고 출혈을 부여한다.",Card4Texture,4
-5,Card5,E_ATTACK,E_RARE,2,"적 2명에게 공격력의 120%의 피해를 입힌다. 입힌 피해의 50%를 회복한다.",Card5Texture,5
-6,Card6,E_ATTACK,E_RARE,1,"적 1명에게 공격력의 80%의 피해를 2회 입힌다.",Card6Texture,6
-7,Card7,E_SKILL,E_RARE,1,"에테르를 2 회복한다.",Card7Texture,7
-8,Card8,E_SKILL,E_RARE,2,"카드를 2장 드로우한다.",Card8Texture,8
-9,Card9,E_SKILL,E_RARE,2,"본인의 방어력이 40% 증가한다.",Card9Texture,9
-10,Card10,E_SKILL,E_NORMAL,1,"적 1명에게 공격력의 120% 피해를 입히고, 출혈을 부여한다.",Card10Texture,10
-11,Card11,E_ATTACK,E_RARE,1,"적 1명에게 공격력의 90% 피해를 2회 입힌다.",Card11Texture,11
-12,Card12,E_ATTACK,E_RARE,1,"본인의 속도가 3 증가하고, 카드를 1장 드로우한다.",Card12Texture,12
-13,Card13,E_SKILL,E_RARE,1,"본인의 속도가 3 증가하고, 카드를 1장 드로우한다.",Card13Texture,13
-14,Card14,E_ATTACK,E_RARE,1,"적 전체에게 공격력의 100% 피해를 입힌다.",Card14Texture,15
-15,Card15,E_SKILL,E_RARE,1,"아군 1명에게 방어력의 30%만큼의 실드를 제공한다.",Card15Texture,16
-16,Card16,E_ATTACK,E_RARE,1,"적 1명에게 공격력의 100% 피해를 입히고, 감전을 부여한다.",Card16Texture,17
+4,Card4,E_ATTACK,E_SUPERRARE,4,"적 3명에게 공격력의 150%의 피해를 입히고, 출혈을 부여한다.",Card4Texture,[4/5]
+5,Card5,E_ATTACK,E_RARE,2,"적 2명에게 공격력의 120%의 피해를 입힌다. 입힌 피해의 50%를 회복한다.",Card5Texture,[6/7]
+6,Card6,E_ATTACK,E_RARE,1,"적 2명에게 공격력의 120%의 피해를 입힌다. 입힌 피해의 50%를 회복한다.",Card6Texture,0
+7,Card7,E_SKILL,E_RARE,1,"적 1명에게 공격력의 80%의 피해를 2회 입힌다.",Card7Texture,7
+8,Card8,E_SKILL,E_RARE,2,"에테르를 2 회복한다.",Card8Texture,8
+9,Card9,E_SKILL,E_RARE,2,"카드를 2장 드로우한다.",Card9Texture,9
+10,Card10,E_SKILL,E_NORMAL,1,"본인의 방어력이 40% 증가한다.",Card10Texture,10
+11,Card11,E_ATTACK,E_RARE,1,"적 1명에게 공격력의 120% 피해를 입히고, 출혈을 부여한다.",Card11Texture,[12/5]
+12,Card12,E_ATTACK,E_RARE,1,"적 1명에게 공격력의 90% 피해를 2회 입힌다.",Card12Texture,13
+13,Card13,E_SKILL,E_RARE,1,"본인의 속도가 3 증가하고, 카드를 1장 드로우한다.",Card13Texture,[14/15]
+14,Card14,E_ATTACK,E_RARE,1,"적 전체에게 공격력의 100% 피해를 입힌다.",Card14Texture,16
+15,Card15,E_SKILL,E_RARE,1,"아군 1명에게 방어력의 30%만큼의 실드를 제공한다.",Card15Texture,17
+16,Card16,E_ATTACK,E_RARE,1,"적 1명에게 공격력의 100% 피해를 입히고, 쇼크 스택을 부여한다.",Card16Texture,[1/20]
+17,Card17,E_ATTACK,E_NORMAL,1,"적 1명에게 공격력의 80%의 피해를 입힌다.",Card17Texture,19
+18,Card18,E_SKILL,E_NORMAL,1,"적 1명에게 쇼크 스택을 부여한다.",Card18Texture,20
+19,Card19,E_SKILL,E_NORMAL,1,"적 1명에게 오버로트를 부여한다.",Card19Texture,21
+20,Card20,E_ATTACK,E_RARE,2,"적 1명에게 공격력의 80%의 피해를 입힌다. 쇼크 상태일 경우 추가 공격이 발생한다.",Card20Texture,[22/23]
+21,Card21,E_ATTACK,E_RARE,2,"적 1명에게 60%의 피해를 입히고 쇼크 스택을 부여한다.",Card21Texture,[24/20]
+22,Card22,E_ATTACK,E_RARE,2,"적 1명에게 120%의 피해를 입히고, 오버로드를 부여한다.",Card22Texture,[26/21]
+23,Card23,E_ATTACK,E_RARE,3,"적 1명에게 공격력의 70%의 피해를 입힌다. 쇼크 상태일 경우 오버로드를 부여한다.",Card23Texture,[28/29]
+24,Card24,E_ATTACK,E_RARE,3,"모든 적에게 공격력의 60%의 피해를 입힌다. 쇼크 상태일 경우 추가 공격이 발생한다.",Card24Texture,[30/31]

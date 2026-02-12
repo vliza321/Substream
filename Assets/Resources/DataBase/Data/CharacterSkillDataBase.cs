@@ -1,12 +1,10 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
-public class CardSkillTableData
+public class CharacterSkillTableData
 {
     public int ID;
     public ECardSkillType SkillType;
@@ -18,18 +16,18 @@ public class CardSkillTableData
     public int TargetCount;
     public int HitCount;
     //public string CardText;
-    public int NextSkillID;
+    //public int NextSkillID;
     public string Sound;
 }
 
 [System.Serializable]
-public class CardSkillTableDataBase : DataScriptableObjects
+public class CharacterSkillTableDataBase : DataScriptableObjects
 {
     [Serialize]
     //key 는 int 형, CardData의 ID
-    public Dictionary<int, CardSkillTableData> CardSkillTable = new Dictionary<int, CardSkillTableData>();
+    public Dictionary<int, CharacterSkillTableData> CardSkillTable = new Dictionary<int, CharacterSkillTableData>();
 
-    public List<CardSkillTableData> CardSkillTableList = new List<CardSkillTableData>();
+    public List<CharacterSkillTableData> CardSkillTableList = new List<CharacterSkillTableData>();
     public override bool TranslateListToDic(int SelectUserID)
     {
         bool result = true;

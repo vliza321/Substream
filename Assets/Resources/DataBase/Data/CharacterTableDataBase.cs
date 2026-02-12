@@ -10,12 +10,13 @@ public class CharacterTableData : Unit
     public string ChracterName;
     public int HP;
     public int ATK;
-    public int KEF;
+    public int DEF;
     public int Speed;
     public float CriticalRate;
     public float CriticalDamage;
     public int AetherRecorverPoint;
     public string CharacterAnimationPrefab;
+    public int SkillID;
 }
 
 [System.Serializable]

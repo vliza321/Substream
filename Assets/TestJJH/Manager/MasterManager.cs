@@ -2,12 +2,18 @@ using System;
 using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MasterManager : MonoBehaviour
 {
-#if true
+
+#if true // System
     [SerializeField]
     private CharacterManager m_characterManager;
     [SerializeField]
@@ -18,7 +24,9 @@ public class MasterManager : MonoBehaviour
     private MonsterManager m_monsterManager;
     [SerializeField]
     private SkillScheduleManager m_skillScheduleManager;
+#endif
 
+#if true // UI
     [SerializeField]
     private CharacterUIManager m_characterUIManager;
     [SerializeField]
@@ -27,27 +35,34 @@ public class MasterManager : MonoBehaviour
     private CardUIManager m_cardUIManager;
     [SerializeField]
     private MonsterUIManager m_monsterUIManager;
-    
+#endif
 
+#if true // DataBase
     [SerializeField]
     private DontDestroyOnLoadManager DataBaseManager;
-    
-    public SkillScheduleManager SkillScheduleManager
-    {
-        get { return m_skillScheduleManager; }
-    }
 #endif
-    private LinkedList<IUpdatableManager> m_IUpdatableManagers;
-    private LinkedList<BaseManager> m_managers;
-    private LinkedList<BaseUI> m_UIManagers;
 
+#if true // Getter
+    public CharacterManager CharacterManager { get => m_characterManager; }
+    public TurnManager TurnManager { get => m_turnManager;}
+    public CardManager CardManager { get => m_cardManager; }
+    public MonsterManager MonsterManager { get => m_monsterManager; }
+    public SkillScheduleManager SkillScheduleManager { get => m_skillScheduleManager; }
+
+    public CharacterUIManager CharacterUIManager { get => m_characterUIManager; }
+    public TurnUIManager TurnUIManager { get => m_turnUIManager; }
+    public CardUIManager CardUIManager { get => m_cardUIManager; }
+    public MonsterUIManager MonsterUIManager { get => m_monsterUIManager; }
+#endif
+
+#if true // Container
+    private LinkedList<IUpdatableManager> m_IUpdatableManagers = new LinkedList<IUpdatableManager>();
+    private LinkedList<BaseSystem> m_managers = new LinkedList<BaseSystem>();
+    private LinkedList<BaseUI> m_UIManagers = new LinkedList<BaseUI>();
+#endif
     public void Awake()
     {
         DataBaseManager.Initialize();
-
-        m_managers = new LinkedList<BaseManager>();
-        m_IUpdatableManagers = new LinkedList<IUpdatableManager>();
-        m_UIManagers = new LinkedList<BaseUI>();
 
         m_managers.AddLast(m_characterManager);
         m_managers.AddLast(m_monsterManager);
@@ -65,46 +80,56 @@ public class MasterManager : MonoBehaviour
         m_turnUIManager.Bind(m_turnManager);
         m_cardUIManager.Bind(m_cardManager);
 
-        for (LinkedListNode<BaseManager> node = m_managers.First; node != null; node = node.Next)
-        {
-            node.Value.Initialize(this);
+        /*********************************SearchUpdatableManager*********************************/
 
-            BaseManager temtManager;
-            if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
-            if (!temtManager.ConnectsDataBase()) Debug.Log(node.Value.gameObject.name);
-
-            temtManager.DataInitialize(m_turnManager, m_characterManager, m_monsterManager);
-        }
-
-        for (LinkedListNode<BaseUI> node = m_UIManagers.First; node != null; node = node.Next)
-        {
-            node.Value.Initialize(this);
-            
-            BaseManager temtManager;
-            if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
-            if (!temtManager.ConnectsDataBase()) Debug.Log(node.Value.gameObject.name);
-
-            temtManager.DataInitialize(m_turnManager, m_characterManager, m_monsterManager);
-        }
-
-        for (LinkedListNode<BaseManager> node = m_managers.First; node != null; node = node.Next)
+        for (LinkedListNode<BaseSystem> node = m_managers.First; node != null; node = node.Next)
         {
             IUpdatableManager temtManager;
-            if(node.Value.TryGetComponent<IUpdatableManager>(out temtManager)) m_IUpdatableManagers.AddFirst(temtManager); ;
+            if (node.Value.TryGetComponent<IUpdatableManager>(out temtManager)) m_IUpdatableManagers.AddFirst(temtManager);
         }
 
-        m_characterManager.Synchronization();
-        m_monsterManager.Synchronization();
-        m_turnManager.Synchronization();
-        m_cardManager.Synchronization();
-    }
+        /***************************************Initialize***************************************/
 
-    public void Synchronization()
-    {
-        foreach (var manager in m_managers)
+        for (LinkedListNode<BaseSystem> node = m_managers.First; node != null; node = node.Next)
         {
-            manager.Synchronization();
+            node.Value.Initialize();
         }
+        for (LinkedListNode<BaseUI> node = m_UIManagers.First; node != null; node = node.Next)
+        {
+            node.Value.Initialize();
+        }
+
+        /***********************************InitializeReference**********************************/
+
+        for (LinkedListNode<BaseSystem> node = m_managers.First; node != null; node = node.Next)
+        {
+            node.Value.InitializeReference(this);
+        }
+        for (LinkedListNode<BaseUI> node = m_UIManagers.First; node != null; node = node.Next)
+        {
+            node.Value.InitializeReference(this);
+        }
+
+        /***********************************DataBaseInitialize***********************************/
+
+        for (LinkedListNode<BaseSystem> node = m_managers.First; node != null; node = node.Next)
+        {
+            BaseManager temtManager;
+            if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
+            if (!temtManager.ConnectsDataBase()) Debug.Log(node.Value.gameObject.name);
+            temtManager.DataInitialize();
+        }
+        for (LinkedListNode<BaseUI> node = m_UIManagers.First; node != null; node = node.Next)
+        {
+            BaseManager temtManager;
+            if (!node.Value.TryGetComponent<BaseManager>(out temtManager)) continue;
+            if (!temtManager.ConnectsDataBase()) Debug.Log(node.Value.gameObject.name);
+            temtManager.DataInitialize();
+        }
+
+        /************************************Synchronization************************************/
+        
+        Synchronization();
     }
 
     public void Update()
@@ -115,27 +140,43 @@ public class MasterManager : MonoBehaviour
         }
     }
 
+    public void Synchronization()
+    {
+        foreach (var manager in m_managers)
+        {
+            manager.Synchronization();
+        }
+    }
+
     public void SetTurn()
     {
         foreach(var manager in m_managers)
         {
-            manager.SetTurn(m_turnManager,m_cardManager);
+            manager.SetTurn();
         }
-
-        m_turnManager.Synchronization();
-        m_cardManager.Synchronization();
+        foreach(var uiManager in m_UIManagers)
+        {
+            uiManager.SetTurn();
+        }
     }
 
-    public void UseCard(Button card, int Cost)
+    public void UseCard(Card card)
     {
-        if(m_turnManager.SetEther(Cost))
-        {
-            card.gameObject.SetActive(false);
-        }
-        if (m_cardManager.ActiveCardNum == 0) SetTurn();
+        card.Execute();
 
-        m_characterManager.Synchronization();
-        m_monsterManager.Synchronization();
-        m_turnManager.Synchronization();
+        foreach (var manager in m_managers)
+        {
+            manager.UseCard(card);
+        }
+        foreach (var uiManager in m_UIManagers)
+        {
+            uiManager.UseCard(card);
+        }
+
+        if (m_cardManager.ActiveCardNum == 0 || m_turnManager.EtherCount <= 0)
+        { 
+            SetTurn();
+            return;
+        }
     }
 }

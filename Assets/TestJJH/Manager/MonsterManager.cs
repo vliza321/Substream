@@ -2,43 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MonsterManager : BaseSystem
+public class MonsterManager : UnitManagerSystme
 {
-    private LinkedList<Unit> m_monster;
-
-    public LinkedList<Unit> Monster
+    public override void Initialize()
     {
-        get { return m_monster; }
-    }
-    public override void Initialize(MasterManager masterManager)
-    {
-        m_masterManager = masterManager;
-
-        m_monster = new LinkedList<Unit>();
+        m_units = new List<Unit>();
     }
 
-    public override void DataInitialize(TurnManager turnManager, CharacterManager characterManager, MonsterManager monsterManager)
+    public override void InitializeReference(MasterManager masterManager)
+    {
+        base.InitializeReference(masterManager);
+    }
+
+    public override void Synchronization()
+    {
+        base.Synchronization();
+    }
+
+    public override void DataInitialize()
     {
         for (int i = 0; i < 1; i++)
         {
-            MonsterData monster = new MonsterData();
+            MonsterTableData monster = new MonsterTableData();
             monster.UserID = 0;
             monster.PrototypeUnitID = i;
             monster.InstanceID = 0;
             monster.Speed = 9;
+            monster.IsCharacter = false;
+            monster.thisObject = this.transform.GetChild(i).gameObject;
+            monster.position = i + 100;
 
-            
-            m_monster.AddLast(monster);
+            m_units.Add(monster);
         }
     }
 
-    public override void SetTurn(TurnManager turnManager, CardManager cardManager)
+    public override void UseCard(Card card)
     {
-       
-    }
-
-    public void SetHealthPoint(int position, float damage)
-    {
-
+        base.UseCard(card);
     }
 }

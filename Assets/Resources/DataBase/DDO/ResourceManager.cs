@@ -82,6 +82,12 @@ public class ResourceManager : MonoBehaviour
         return Character_Portrait_Dic[KeyConvert(id)];
     }
 
+    /// <summary>
+    /// 임시 몬스터 초상화 리소스
+    /// </summary>
+
+    public Sprite Monster_Portrait;
+
     public void Awake()
     {
         if (instance == null)

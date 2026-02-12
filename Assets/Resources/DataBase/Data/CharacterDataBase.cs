@@ -7,6 +7,7 @@ using UnityEngine;
 [System.Serializable]
 public class CharacterData : Unit
 {
+    // 사용하는 유닛의 정보
     public int UserID;
     public int PrototypeUnitID;
     public int InstanceID;

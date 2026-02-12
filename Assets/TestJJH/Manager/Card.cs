@@ -8,9 +8,9 @@ public class Card
 {
     private Unit m_unit;
     private CardTableData m_cardData;
-    private CardSkillTableData m_Skills;
-    private SkillScheduleManager m_skillScheduler;
-    public void Initialize(Unit unit, CardTableData cardData, SkillScheduleManager skillScheduler)
+    private List<CardSkillTableData> m_skills;
+    private SkillScheduleManager m_skillSchedulerManager;
+    public void Initialize(Unit unit, CardTableData cardData, SkillScheduleManager skillSchedulerManager)
     {
         m_unit = unit;
 
@@ -25,12 +25,22 @@ public class Card
             CardText = cardData.CardText,
             SkillID = cardData.SkillID,
         };
-
-        m_skillScheduler = skillScheduler;
-        
+        m_skillSchedulerManager = skillSchedulerManager;
         DontDestroyOnLoadManager ddo = DontDestroyOnLoadManager.Instance;
-        CardSkillTableData Skill = ddo.CardSkillTable(m_cardData.SkillID);
-        m_Skills = (Skill);
+        m_skills = new List<CardSkillTableData>(m_cardData.SkillID.Count);
+        CardSkillTableData Skill = ddo.CardSkillTable(m_cardData.SkillID[0]);
+        //  public int ID;
+        //  public ECardSkillType SkillType;
+        //  public ECardSkillSource SkillSource;
+        //  public float EffectValue;
+        //  public float UpgradeEffectValue;
+        //  public ECardSkillStatusType StatusType;
+        //  public ECardSkillTargetType TargetType;
+        //  public int TargetCount;
+        //  public int HitCount;
+        //  public string CardText;
+        //  public int NextSkillID;
+        //  public string Sound;
     }
 
     public CardTableData CardData
@@ -41,19 +51,6 @@ public class Card
 
     public void Execute()
     {
-        //Debug.Log("Use Card In Turn: " + m_cardData.ID + " " + m_cardData.Name + " " + m_cardData.CardType + " " + m_cardData.CardRarity + " " + m_cardData.Cost + " " + m_cardData.Texture + " " + m_cardData.CardText + " " + m_cardData.SkillID);
-        switch (m_cardData.CardType)
-        {
-            case ECardType.E_DEFAULT:
-                Debug.Log("DEFAULT DATA IS IN CARD :" + m_cardData.ID + "," + m_cardData.Name);
-                break;
-            case ECardType.E_ATTACK:
-
-                break;
-            case ECardType.E_SKILL:
-                break;
-        }
-
-        m_skillScheduler.RegistCardSkill(m_unit, m_Skills, CardData);
+        m_skillSchedulerManager.RegistAbilityCast(m_unit, m_cardData, true);
     }
 }

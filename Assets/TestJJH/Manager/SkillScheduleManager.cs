@@ -1,92 +1,267 @@
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using static MasterManager;
+using static UnityEngine.GraphicsBuffer;
 
 public class SkillScheduleManager : BaseSystem, IUpdatableManager
 {
-    private CardSkillScheduler m_cardSkillScheduler;
-    private UnitSkillScheduler m_unitSkillScheduler;
+    private CharacterManager m_characterManager;
+    private MonsterManager m_monsterManager;
 
-    private ISkillScheduler m_currentSkillScheduler;
+    private SkillScheduler m_cardSkillScheduler;
+    private SkillScheduler m_unitSkillScheduler;
+    public SkillScheduler CardSkillScheduler
+    {
+        get { return m_cardSkillScheduler; }
+    }
+    public SkillScheduler UniSkillScheduler
+    {
+        get { return m_unitSkillScheduler; }
+    }
+
+    private SkillScheduler m_currentSkillScheduler;
 
     [SerializeField]
     private float SKILLOPERATETIME;
-    private float m_currentSkillTime;
-    public void RegistCardSkill(Unit unit, CardSkillTableData cardSkill, CardTableData Card)
+    private float m_skillTimeRate;
+    private bool m_isRunning = false;
+
+    private Queue<Func<IEnumerator>> m_registSkillQueue;
+
+    private BattleFacade m_battleFacade;
+    private SkillOrchestrator m_skillOrchestrator;
+    public void RegistAbilityCast(Unit unit, CardTableData Card, bool CasterIsCard)
     {
-        m_cardSkillScheduler.RegisteSkill(unit, cardSkill, Card);   
+        m_registSkillQueue.Enqueue(() => DivideAndResolveTargetSkill(unit, Card, CasterIsCard));
+        
+        if (!m_isRunning)
+            StartCoroutine(ProcessQueue());
     }
 
-    public void RegistUnitSkill(Unit unit, CardSkillTableData cardSkill, CardTableData Card)
+    public override void Initialize()
     {
-        m_unitSkillScheduler.RegisteSkill(unit, cardSkill, Card);
-    }
-
-    public override void Initialize(MasterManager masterManager)
-    {
-        m_masterManager = masterManager;
-
-        m_cardSkillScheduler = new CardSkillScheduler();
-        m_unitSkillScheduler = new UnitSkillScheduler();
-
-        m_currentSkillTime = 0;
+        m_cardSkillScheduler = new SkillScheduler();
+        m_unitSkillScheduler = new SkillScheduler();
 
         m_currentSkillScheduler = m_cardSkillScheduler;
 
-        m_cardSkillScheduler.Initialize(masterManager);
-        m_unitSkillScheduler.Initialize(masterManager);
+        m_registSkillQueue = new Queue<Func<IEnumerator>>();
+
+        m_skillTimeRate = SKILLOPERATETIME / 5;
+
+        m_skillOrchestrator = new SkillOrchestrator();
+    }
+
+    public override void InitializeReference(MasterManager masterManager)
+    {
+        m_masterManager = masterManager;
+        m_characterManager = masterManager.CharacterManager;
+        m_monsterManager = masterManager.MonsterManager;
+        m_battleFacade = new BattleFacade(m_characterManager,m_monsterManager, masterManager.CardManager, masterManager.TurnManager);
     }
 
     public void Execute()
     {
-        //dont have a registered skill or a registered skill
-        if (m_currentSkillScheduler.Caster() == null && 
-            m_cardSkillScheduler.SkillQueueIsEmpty() && 
-            m_unitSkillScheduler.SkillQueueIsEmpty()) 
-            return;
+        if (!m_cardSkillScheduler.SkillQueueIsEmpty() || !m_unitSkillScheduler.SkillQueueIsEmpty())
+        {
+            StartCoroutine(WriteSkillContext());
+        }
+    }
+
+    private IEnumerator ProcessQueue()
+    {
+        m_isRunning = true;
+
+        while (m_registSkillQueue.Count > 0)
+        {
+            var routine = m_registSkillQueue.Dequeue();
+            yield return StartCoroutine(routine.Invoke());
+        }
+
+        m_isRunning = false;
+    }
+
+    public void CalculateTargetCount(bool isCharacter, int targetCount, int maxTargetCount)
+    {
+        if (isCharacter)
+        {
+            targetCount = Mathf.Min(maxTargetCount, m_monsterManager.Units.Count);
+        }
+        else
+        {
+            targetCount = Mathf.Min(maxTargetCount, m_characterManager.Units.Count);
+        }
+    }
+
+    public IEnumerator DivideAndResolveTargetSkill(Unit unit, CardTableData card, bool CasterIsCard)
+    {
+#if UNITY_EDITOR
+        Debug.Log("###########스킬 로드 시작###########");
+#endif
+        yield return new WaitForSeconds(m_skillTimeRate);
+
+        // 능력 사용에서 스킬을 분해
+        List<Skill> skills = new List<Skill>();
+        foreach (var id in card.SkillID)
+        {
+            CardSkillTableData cardSkill = DontDestroyOnLoadManager.Instance.CardSkillTable(id);
+            Skill s = new Skill(unit, cardSkill, card, m_battleFacade);
+            skills.Add(s);
+        }
+        
+        bool thisUnitIsCharacter = unit.IsCharacter; ;
+        int targetCount = 0;
+#if UNITY_EDITOR
+        Debug.Log("###########스킬 로드 완료###########");
+        Debug.Log("###########타겟 지정 시작###########");
+#endif
+        yield return new WaitForSeconds(m_skillTimeRate);
+        foreach (var s in skills)
+        {
+            CalculateTargetCount(thisUnitIsCharacter, targetCount, s.SkillData.TargetCount);
+
+            var Context = s.Context;
+            switch (s.SkillData.TargetType)
+            {
+                case ECardSkillTargetType.E_SELF:
+                    Context.Target.Add(new TargetPair(thisUnitIsCharacter, s.CasterUnit.position));
+                    break;
+                case ECardSkillTargetType.E_SINGLE_CHARACTER:
+                    Context.Target.Add(new TargetPair(thisUnitIsCharacter, UnityEngine.Random.Range(0, m_characterManager.Units.Count)));
+                    break;
+                case ECardSkillTargetType.E_SINGLE_ENEMY:
+                    if (thisUnitIsCharacter) Context.Target.Add(new TargetPair(false, UnityEngine.Random.Range(0, m_monsterManager.Units.Count)));
+                    else Context.Target.Add(new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count)));
+                    break;
+                case ECardSkillTargetType.E_MULTI_ENEMIES:
+                    for (int i = 0; i < targetCount; i++)
+                    {
+                        TargetPair newTarget;
+                        if (thisUnitIsCharacter)
+                            newTarget = new TargetPair(false, UnityEngine.Random.Range(0, m_monsterManager.Units.Count));
+                        else
+                            newTarget = new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
+
+                        if (!Context.Target.Contains(newTarget)) Context.Target.Add(newTarget);
+                    }
+                    break;
+                case ECardSkillTargetType.E_ALL_ENEMIES:
+                    for (int i = 0; i < targetCount; i++)
+                    {
+                        TargetPair newTarget;
+                        if (thisUnitIsCharacter)
+                            newTarget = new TargetPair(false, UnityEngine.Random.Range(0, m_monsterManager.Units.Count));
+                        else
+                            newTarget = new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
+
+                        if (!Context.Target.Contains(newTarget)) Context.Target.Add(newTarget);
+                    }
+                    break;
+
+
+                case ECardSkillTargetType.E_ENEMIES:
+                    break;
+                case ECardSkillTargetType.E_ALL:
+                    break;
+
+
+                case ECardSkillTargetType.E_NONE:
+                    Debug.Log("cardSkil TargetType is none");
+                    break;
+                default:
+                    Debug.Log("cardSkil TargetType is warring");
+                    break;
+            }
+#if UNITY_EDITOR
+            StringBuilder _sTarget = new StringBuilder();
+            foreach (var targetPair in Context.Target)
+            {
+                if (targetPair.isCharacer)
+                {
+                    _sTarget.Append(targetPair.position);
+                    _sTarget.Append("번 캐릭터가 타겟이 되었습니다");
+                }
+                else
+                {
+                    _sTarget.Append(targetPair.position);
+                    _sTarget.Append("번 몬스터가 타겟이 되었습니다");
+                }
+            }
+            Debug.Log("###########스킬 타겟 지정 종료###########" + _sTarget.ToString());
+#endif
+            yield return new WaitForSeconds(m_skillTimeRate);
+        }
+        if(CasterIsCard)
+        {
+            m_cardSkillScheduler.RegistSkill(skills);
+        }
+        else
+        {
+            m_unitSkillScheduler.RegistSkill(skills);
+        }
+    }
+
+    private SkillScheduler SelectScheduler()
+    {
+        if (!m_unitSkillScheduler.SkillQueueIsEmpty())
+            return m_unitSkillScheduler;
 
         if (!m_cardSkillScheduler.SkillQueueIsEmpty())
-        {
-            m_currentSkillScheduler = m_cardSkillScheduler; 
-        }
-        if (!m_unitSkillScheduler.SkillQueueIsEmpty())
-        {
-            m_currentSkillScheduler = m_unitSkillScheduler; 
-        }
+            return m_cardSkillScheduler;
 
-        //dont have a current registered skill
-        if (m_currentSkillScheduler.Caster() == null)
-        {
-            ScheduleEnter();
-        }
-
-        //After skill registration
-        //unless it's a valid skill registration without a unit
-        if (m_currentSkillScheduler.Caster() != null)
-        {
-            ScheduleExecute();
-        }
-
-        //past the allotted time
-        if (m_currentSkillTime > SKILLOPERATETIME)
-        {
-            ScheduleEnd();
-        }
+        return null;
     }
 
-    private void ScheduleEnter()
+    private IEnumerator WriteSkillContext()
     {
-        m_currentSkillScheduler.Enter();
-    }
+#if UNITY_EDITOR
+       
+        Debug.Log("###########스킬 사용 시작###########");
 
-    private void ScheduleExecute()
-    {
-        m_currentSkillTime += Time.deltaTime;
-        m_currentSkillScheduler.Execute();
-    }
+#endif
+        var scheduler = SelectScheduler();
 
-    private void ScheduleEnd()
-    {
-        m_currentSkillScheduler.Exit();
-        m_currentSkillTime = 0;
+        foreach (var s in scheduler.GetSkill())
+        {
+            yield return new WaitForSeconds(m_skillTimeRate);
+            // value 계산 로직 (피해 감소 계산은 별도)
+            bool critical = (UnityEngine.Random.Range(0, 1001) < (s.CasterUnit.UnitCriticalRate * 100));
+            float rateValue = 0;
+            switch (s.SkillData.SkillSource)
+            {
+                case ECardSkillSource.E_NONE:
+                case ECardSkillSource.E_DECK:
+                case ECardSkillSource.E_SPEED:
+                case ECardSkillSource.E_AETHER:
+                    rateValue = 1;
+                    critical = false;
+                    break;
+                case ECardSkillSource.E_ATK:
+                    rateValue = s.CasterUnit.UnitATK;
+                    break;
+                case ECardSkillSource.E_DAMAGED_INFLICTED:
+                    rateValue = 10;
+                    break;
+                case ECardSkillSource.E_DEF:
+                    rateValue = s.CasterUnit.UnitDEF;
+                    break;
+            }
+            s.Context.isCritical = critical;
+            s.Context.Value = (1.0f + (critical ? s.CasterUnit.UnitCriticalDamage * 0.3f : 0.0f)) * (s.SkillData.EffectValue * rateValue);
+
+            m_skillOrchestrator.Execute(s.Context);
+#if UNITY_EDITOR
+            Debug.Log("###########스킬 사용###########");
+#endif
+        }
+#if UNITY_EDITOR
+        Debug.Log("###########스킬 사용 종료###########");
+#endif
     }
 }

@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
-public class MonsterData : Unit
+public class MonsterTableData : Unit
 {
     public int UserID;
     public int PrototypeUnitID;
@@ -17,10 +17,10 @@ public class MonsterDataBase : DataScriptableObjects
 {
     [Serialize]
     //key 는 (int,int,int)형식, 순서대로 UserID, PrototypeUnitID, InstanceID
-    public Dictionary<(int, int, int), MonsterData> Monster = new Dictionary<(int, int, int), MonsterData>();
+    public Dictionary<(int, int, int), MonsterTableData> Monster = new Dictionary<(int, int, int), MonsterTableData>();
 
 
-    public List<MonsterData> MonsterList = new List<MonsterData>();
+    public List<MonsterTableData> MonsterList = new List<MonsterTableData>();
 
     public override bool TranslateListToDic(int SelectUserID)
     {

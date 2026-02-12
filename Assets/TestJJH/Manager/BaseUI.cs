@@ -7,7 +7,8 @@ public abstract class BaseUI : BaseManager
 {
 }
 
-public abstract class BaseUI<TSystem> : BaseUI where TSystem : BaseSystem
+public abstract class BaseUI<TSystem> 
+    : BaseUI where TSystem : BaseSystem
 {
     protected TSystem m_model;
     public void Bind(TSystem targetSystem)

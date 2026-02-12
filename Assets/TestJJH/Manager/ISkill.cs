@@ -2,36 +2,90 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface ISkill
+public struct SkillContext
 {
-    Unit CasterUnit { get; }
+    public TargetPair CasterUnit;
+    public bool isCritical;
+    public float Value;
+    public List<TargetPair> Target;
+    public ECardSkillStatusType StatusType;
+    public ECardSkillType SkillType;
+    public ECardSkillSource SkillSource;
 
-    void Initialize();
-    void Enter();
-    void Execute();
-    void End();
+    public IManagerFacade SkillApplyHelper;
+}
+public struct TargetPair
+{
+    public bool isCharacer;
+    public int position;
+
+    public TargetPair(bool isCharacer, int position)
+    {
+        this.isCharacer = isCharacer;
+        this.position = position;
+    }
 }
 
-public class CardSkill : ISkill
+public class Skill
 {
+    public SkillContext Context;
     public Unit CasterUnit { get; private set; }
-    public CardSkillTableData SkillData;
-    public CardTableData CasterCard;
+    //public int UnitSpeed = 0;
+    //public bool IsCharacter = true;
+    //// 전투 관련 스탯
+    //public bool HasBleed = false;
+    //public bool HasParalyse = false;
+    //public GameObject thisObject;
+    //public int position;
+    //public float MaxHP;
 
-    public CardSkill(Unit caster, CardSkillTableData SkillData, CardTableData CasterCard)
+    public CardSkillTableData SkillData;
+    //  public int ID;
+    //  public ECardSkillType SkillType;
+    //  public ECardSkillSource SkillSource;
+    //  public float EffectValue;
+    //  public float UpgradeEffectValue;
+    //  public ECardSkillStatusType StatusType;
+    //  public ECardSkillTargetType TargetType;
+    //  public int TargetCount;
+    //  public int HitCount;
+    //  public string CardText;
+    //  public int NextSkillID;
+    //  public string Sound;
+
+    public CardTableData CasterCard;
+    //    public int ID;
+    //    public string Name;
+    //    public ECardType CardType;
+    //    public ECardRarity CardRarity;
+    //    public int Cost;
+    //    public string CardText;
+    //    public string Texture;
+    //    public int SkillID;
+    public Skill(Unit caster, CardSkillTableData SkillData, CardTableData CasterCard, IManagerFacade skillApplyHelper)
     {
         CasterUnit = caster;
         this.SkillData = SkillData;
         this.CasterCard = CasterCard;
+        
+        Context = new SkillContext();
+        Context.CasterUnit = new TargetPair(CasterUnit.IsCharacter, CasterUnit.position);
+        Context.isCritical = false;
+        Context.Value = 0;
+        Context.Target = new List<TargetPair>();
+        Context.StatusType = ECardSkillStatusType.E_NONE;
+        Context.SkillType = ECardSkillType.E_DEFAULT;
+        Context.SkillSource = ECardSkillSource.E_NONE;
+        Context.StatusType = SkillData.StatusType;
+        Context.SkillType = SkillData.SkillType;
+        Context.SkillSource = SkillData.SkillSource;
+        Context.SkillApplyHelper = skillApplyHelper;
     }
 
     public void Initialize() { }
-    public void Enter() { /* 카드 스킬 시작 로직 */ }
-    public void Execute() { /* 실행 로직 */ }
-    public void End() { /* 종료 로직 */ }
 }
 
-public class UnitSkill : ISkill
+public class UnitSkill
 {
     public Unit CasterUnit { get; private set; }
     public CardSkillTableData SkillData;
@@ -45,7 +99,4 @@ public class UnitSkill : ISkill
     }
 
     public void Initialize() { }
-    public void Enter() { /* 유닛 스킬 시작 로직 */ }
-    public void Execute() { /* 실행 로직 */ }
-    public void End() { /* 종료 로직 */ }
 }
