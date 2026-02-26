@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IManagerFacade
 {
     // 전투 관련
-    void ApplyDamage(TargetPair target, float amount);
+    void ApplyDamage(TargetPair target, float amount, bool isCritical, float criticalDamageRate);
     void ApplyHeal(TargetPair target, float amount);
 
     // 카드 관련

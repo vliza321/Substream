@@ -1,39 +1,165 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Status
+
+[System.Serializable]
+public struct StatusEffect
 {
-    public float HP;
-    public int ATK;
-    public int DEF;
-    public int Speed;
-    public float CriticalRate;
-    public float CriticalDamage;
+    public ECardSkillStatusType Effect;
+    public int Duration;
+    public float Value;
+    public Unit Caster;
+}
+
+public struct IStatModifier
+{
+    public int Duration;
+    public float Amount;
+}
+
+public enum EStatType
+{
+    HP,
+    ATK,
+    DEF,
+    Speed,
+    CriticalTriggerRate,
+    CriticalValueRate
 }
 
 
+[System.Serializable]
+public class Stat
+{
+    [SerializeField]
+    public readonly float Base = 0;
+    [SerializeField]
+    public float Now = 0;
+    public float Max
+    {
+        get
+        {
+            float value = Base;
 
+            foreach (var mod in modifiers)
+                value += mod.Amount;
+
+            return value;
+        }
+    }
+    private LinkedList<IStatModifier> modifiers = new LinkedList<IStatModifier>();
+
+    public Stat(float Base)
+    {
+        this.Base = Base;
+        this.Now = Base;
+    }
+
+    public void AddModifie(int duration, float amount)
+    {
+        IStatModifier newModifie;
+        newModifie.Duration = duration;
+        newModifie.Amount = amount;
+        modifiers.AddLast(newModifie);
+        Now += amount;
+    }
+
+    public void SetTurn()
+    {
+        foreach (var modifierIt in modifiers)
+        {
+            var modifierDuration = modifierIt.Duration;
+            modifierDuration--;
+            if (modifierIt.Duration < 0)
+            {
+                modifiers.Remove(modifierIt);
+                Now -= modifierIt.Amount;
+            }
+        }
+    }
+}
+
+[System.Serializable]
 public class Unit
 {
     public bool IsCharacter = true;
     public GameObject thisObject;
     public int position;
 
+    public Stat HealthPoint => m_stats[EStatType.HP];
+    public Stat AttackPoint => m_stats[EStatType.ATK];
+    public Stat DefendPoint => m_stats[EStatType.DEF];
+    public Stat SpeedPoint => m_stats[EStatType.Speed];
+    public Stat CriticalTriggerRate => m_stats[EStatType.CriticalTriggerRate];
+    public Stat CriticalValueRate => m_stats[EStatType.CriticalValueRate];
+
+    [SerializeField]
+    public Stat DebugHP;
+    [SerializeField]
+    private UnitUI m_ui;
+
     // 전투 관련 기본 스탯
-    public Status BaseStatus;
-    public Status RealTimeStatus;
+    [SerializeField]
+    private Dictionary<EStatType, Stat> m_stats = new Dictionary<EStatType, Stat>();
 
-    public float BaseHP;
-    public int UnitATK;
-    public int UnitDEF;
-    public int UnitSpeed = 0;
-    public float UnitCriticalRate;
-    public float UnitCriticalDamage;
+    // 상태이상 관련 (출혈, 감전 등)
+    [SerializeField]
+    private LinkedList<StatusEffect> m_statusEffect = new LinkedList<StatusEffect>();
 
-    // 상태이상 관련
-    public LinkedList<StatusEffectData> StatusEffect = new LinkedList<StatusEffectData>();
-    
-    public bool HasBleed = false;
-    public bool HasParalyse = false;
+    public LinkedList<StatusEffect> StatusEffect
+    {
+        get { return m_statusEffect; }
+    }
+
+    public void Init(float hp, float atk, float def, float speed, float CriticalTriggerRate, float CriticalValueRate)
+    {
+        m_stats.Add(EStatType.HP, new Stat(hp));
+        m_stats.Add(EStatType.ATK, new Stat(atk));
+        m_stats.Add(EStatType.DEF, new Stat(def));
+        m_stats.Add(EStatType.Speed, new Stat(speed));
+        m_stats.Add(EStatType.CriticalTriggerRate, new Stat(CriticalTriggerRate));
+        m_stats.Add(EStatType.CriticalValueRate, new Stat(CriticalValueRate));
+
+        DebugHP = m_stats[EStatType.HP];
+    }
+
+    public void SetTurn()
+    {
+        // 상태이상 자체 효과
+        foreach (var effectIT in m_statusEffect)
+        {
+            
+        }
+        foreach (var effectIt in m_statusEffect)
+        {
+            var effectDuration = effectIt.Duration;
+            effectDuration--;
+            if (effectIt.Duration < 0)
+            {
+                m_statusEffect.Remove(effectIt);
+            }
+        }
+    }
+
+    public void AddBuff(ECardSkillStatusType effect, int duration, float value, Unit caster)
+    {
+        StatusEffect newEffect;
+        newEffect.Effect = effect;
+        newEffect.Duration = duration;
+        newEffect.Value = value;
+        newEffect.Caster = caster;
+        m_statusEffect.AddFirst(newEffect);
+    }
+
+    public void AddDeBuff(ECardSkillStatusType effect, int duration, float value, Unit caster)
+    {
+        StatusEffect newEffect;
+        newEffect.Effect = effect;
+        newEffect.Duration = duration;
+        newEffect.Value = value;
+        newEffect.Caster = caster;
+        m_statusEffect.AddLast(newEffect);
+    }
 }

@@ -37,24 +37,6 @@ public class TurnUIManager : BaseUI<TurnManager>
     {
         m_unitPortraitPair.Clear();
         int i = 0;
-        /*
-        foreach (var character in characterManager.Character)
-        {
-            OrderByTurnSpeedImage[i].transform.GetChild(0).GetComponent<Image>().sprite = ResourcesManager.Character_Portrait(character.ID);
-            UnitPortraitPair pair = new UnitPortraitPair();
-            pair.s_portrait = OrderByTurnSpeedImage[i];
-            pair.s_unit = character;
-            m_unitPortraitPair.Add(pair);
-            i++;
-        }
-        foreach (var monster in monsterManager.Monster)
-        {
-            UnitPortraitPair pair = new UnitPortraitPair();
-            pair.s_portrait = OrderByTurnSpeedImage[i];
-            pair.s_unit = monster;
-            m_unitPortraitPair.Add(pair);
-            i++;
-        }*/
         UnitPortraitPair currentPair = new UnitPortraitPair();
         currentPair.s_portrait = OrderByTurnSpeedImage[i];
         currentPair.s_unit = m_model.CurrentTurnUnit;
@@ -77,12 +59,13 @@ public class TurnUIManager : BaseUI<TurnManager>
             m_unitPortraitPair.Add(pair);
             i++;
         }
+        SetTurnEtherInfo();
+        SetPortrait();
     }
 
     public override void Synchronization()
     {
-        SetTurnEtherInfo();
-        SetPortrait();
+
     }
 
     public void SetTurnEtherInfo()

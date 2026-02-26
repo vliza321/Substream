@@ -5,7 +5,8 @@ using UnityEngine;
 public struct SkillContext
 {
     public TargetPair CasterUnit;
-    public bool isCritical;
+    public bool IsCritical;
+    public float CriticalValueRate;
     public float Value;
     public List<TargetPair> Target;
     public ECardSkillStatusType StatusType;
@@ -70,7 +71,7 @@ public class Skill
         
         Context = new SkillContext();
         Context.CasterUnit = new TargetPair(CasterUnit.IsCharacter, CasterUnit.position);
-        Context.isCritical = false;
+        Context.IsCritical = false;
         Context.Value = 0;
         Context.Target = new List<TargetPair>();
         Context.StatusType = ECardSkillStatusType.E_NONE;

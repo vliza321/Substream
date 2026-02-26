@@ -75,11 +75,6 @@ public class CardUIManager : BaseUI<CardManager>
 
     public override void DataInitialize()
     {
-        
-    }
-
-    public override void Synchronization()
-    {
         if (m_model.Hand.Count == 0)
         {
             for (int i = 0; i < m_cardButtons.Length; i++)
@@ -98,6 +93,29 @@ public class CardUIManager : BaseUI<CardManager>
         DeckGridInit();
         GraveyardGridInit();
         HandGridInit();
+    }
+
+    public override void Synchronization()
+    {
+        /*
+        if (m_model.Hand.Count == 0)
+        {
+            for (int i = 0; i < m_cardButtons.Length; i++)
+            {
+                m_cardButtons[i].gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            for (int i = 0; i < m_model.Hand.Count; i++)
+            {
+                m_cardButtons[i].gameObject.SetActive(true);
+            }
+        }
+
+        DeckGridInit();
+        GraveyardGridInit();
+        HandGridInit();*/
     }
 
     public override void SetTurn()

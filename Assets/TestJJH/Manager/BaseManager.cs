@@ -33,7 +33,6 @@ public abstract class BaseManager : AccessableDataBase
     }
 }
 
-
 interface IUpdatableManager
 {
     void Execute();

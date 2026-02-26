@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MonsterManager : UnitManagerSystme
@@ -14,11 +15,6 @@ public class MonsterManager : UnitManagerSystme
         base.InitializeReference(masterManager);
     }
 
-    public override void Synchronization()
-    {
-        base.Synchronization();
-    }
-
     public override void DataInitialize()
     {
         for (int i = 0; i < 1; i++)
@@ -29,8 +25,9 @@ public class MonsterManager : UnitManagerSystme
             monster.InstanceID = 0;
             monster.Speed = 9;
             monster.IsCharacter = false;
-            monster.thisObject = this.transform.GetChild(i).gameObject;
             monster.position = i + 100;
+
+            monster.Init(1000, 1000, 1000, monster.Speed, 3, 3);
 
             m_units.Add(monster);
         }

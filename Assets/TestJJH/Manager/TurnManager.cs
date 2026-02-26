@@ -94,15 +94,14 @@ public class TurnManager : BaseSystem
             {
                 continue;
             }
-            unit.UnitSpeed = speed;
             units.Add(unit);
         }
         units.Sort((a, b) =>
         {
-            int cmp = b.UnitSpeed.CompareTo(a.UnitSpeed);
+            int cmp = b.SpeedPoint.Now.CompareTo(a.SpeedPoint.Now);
             if (cmp == 0)
             {
-                return Random.Range(-1, 2); // -1, 0, 1 以??섎굹 諛섑솚
+                return Random.Range(-1, 2); // -1, 0, 1
             }
             return cmp;
         });
@@ -116,16 +115,13 @@ public class TurnManager : BaseSystem
 
         m_currentTurnUnit = m_unitFlow.First.Value;
         m_unitFlow.RemoveFirst();
-
-        m_characterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
-        m_monsterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
     }
 
     public override void SetTurn()
     {
         // 25.12.09 기준. +1 이 필수적 현 속도 테스트 기준으로는 +1 없이는 너무 느려서 턴이 안옴
         // 상수 값 15 기준으로 이상이면 4번째 재배치, 아니면 무조건 마지막으로 감
-        int pos = m_unitFlow.Count - (int)(m_currentTurnUnit.UnitSpeed + 15) / 15 + 1;
+        int pos = m_unitFlow.Count - (int)(m_currentTurnUnit.SpeedPoint.Now + 15) / 15 + 1;
         List<Unit> units = new List<Unit>();
         foreach (var unit in m_unitFlow)
         {
@@ -163,5 +159,11 @@ public class TurnManager : BaseSystem
         m_etherCount -= EtherCount;
         //Debug.Log(TurnCount + " / Cost : " + EtherCount + "남은거 : " + m_etherCount);
         return true;
+    }
+
+    public override void Synchronization()
+    {
+        m_characterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
+        m_monsterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
     }
 }

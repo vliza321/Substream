@@ -13,7 +13,7 @@ public class DamageSkillStrategy : ISkillStrategy
     {
         foreach(var t in context.Target)
         {
-            context.SkillApplyHelper.ApplyDamage(t,context.Value);
+            context.SkillApplyHelper.ApplyDamage(t, context.Value, context.IsCritical, context.CriticalValueRate);
         }
     }
 }

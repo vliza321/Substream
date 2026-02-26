@@ -63,7 +63,7 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
         m_masterManager = masterManager;
         m_characterManager = masterManager.CharacterManager;
         m_monsterManager = masterManager.MonsterManager;
-        m_battleFacade = new BattleFacade(m_characterManager,m_monsterManager, masterManager.CardManager, masterManager.TurnManager);
+        m_battleFacade = new BattleFacade(m_masterManager, m_characterManager,m_monsterManager, masterManager.CardManager, masterManager.TurnManager);
     }
 
     public void Execute()
@@ -231,7 +231,7 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
         {
             yield return new WaitForSeconds(m_skillTimeRate);
             // value 계산 로직 (피해 감소 계산은 별도)
-            bool critical = (UnityEngine.Random.Range(0, 1001) < (s.CasterUnit.UnitCriticalRate * 100));
+            bool critical = (UnityEngine.Random.Range(0, 1001) < (s.CasterUnit.CriticalTriggerRate.Now * 100));
             float rateValue = 0;
             switch (s.SkillData.SkillSource)
             {
@@ -243,19 +243,21 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
                     critical = false;
                     break;
                 case ECardSkillSource.E_ATK:
-                    rateValue = s.CasterUnit.UnitATK;
+                    rateValue = s.CasterUnit.AttackPoint.Now;
                     break;
                 case ECardSkillSource.E_DAMAGED_INFLICTED:
                     rateValue = 10;
                     break;
                 case ECardSkillSource.E_DEF:
-                    rateValue = s.CasterUnit.UnitDEF;
+                    rateValue = s.CasterUnit.DefendPoint.Now;
                     break;
             }
-            s.Context.isCritical = critical;
-            s.Context.Value = (1.0f + (critical ? s.CasterUnit.UnitCriticalDamage * 0.3f : 0.0f)) * (s.SkillData.EffectValue * rateValue);
+            s.Context.IsCritical = critical;
+            s.Context.CriticalValueRate = s.CasterUnit.CriticalValueRate.Now;
+            s.Context.Value = (s.SkillData.EffectValue * rateValue);
 
             m_skillOrchestrator.Execute(s.Context);
+            m_masterManager.Synchronization();
 #if UNITY_EDITOR
             Debug.Log("###########스킬 사용###########");
 #endif

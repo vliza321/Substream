@@ -28,26 +28,15 @@ public class CharacterManager : UnitManagerSystme
             CharacterTableData pc = DataBase.Character(i + 1);
             pc.position = i;
             pc.IsCharacter = true;
-            pc.thisObject = this.transform.GetChild(i).gameObject;
 
-            pc.BaseStatus.HP = pc.HP;
-            pc.BaseStatus.ATK = pc.ATK;
-            pc.BaseStatus.DEF = pc.DEF;
-            pc.BaseStatus.Speed = pc.Speed;
-            pc.BaseStatus.CriticalRate = pc.CriticalRate;
-            pc.BaseStatus.CriticalDamage = pc.CriticalDamage;
-            pc.RealTimeStatus = pc.BaseStatus;
+            pc.Init(pc.HP, pc.ATK, pc.DEF, pc.Speed, pc.CriticalRate, pc.CriticalDamage);
+            
             m_units.Add(pc);
         }
         for (int i = m_partyCount; i < 4; i++)
         {
             this.transform.GetChild(i).gameObject.SetActive(false);
         }
-    }
-
-    public override void Synchronization()
-    {
-        base.Synchronization();
     }
 
     public override void UseCard(Card card)
