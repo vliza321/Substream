@@ -20,13 +20,14 @@ public enum ECardType
 [System.Serializable]
 public enum ECardRarity
 {
-    E_NORMAL = 0,
+    E_NONE = 0,
+    E_NORMAL,
     E_RARE,
     E_SUPERRARE
 }
 
 [System.Serializable]
-public enum ECardSkillType
+public enum ESkillType
 {
     E_DEFAULT = 0,
     E_DAMAGE,
@@ -34,23 +35,27 @@ public enum ECardSkillType
     E_INCREASE,
     E_DRAW,
     E_SHIELD,
-    E_APPLY_DEBUFF
+    E_DEBUFF,
+    E_ETC,
+    E_CONDITIONAL_DAMAGE
 }
 
 [System.Serializable]
-public enum ECardSkillSource
+public enum ESkillSource
 {
     E_NONE= 0,
-    E_ATK,
-    E_DAMAGED_INFLICTED,
-    E_AETHER,
     E_DECK,
-    E_DEF,
     E_SPEED,
+    E_AETHER,
+    E_DAMAGED_INFLICTED,
+
+    E_ATK,
+    E_DEF,
+    E_HP
 }
 
 [System.Serializable]
-public enum ECardSkillStatusType
+public enum ESkillStatusType
 {
     E_NONE = 0,
     E_BLEED,
@@ -60,20 +65,12 @@ public enum ECardSkillStatusType
 }
 
 [System.Serializable]
-public enum ECardSkillTargetType
+public enum ESkillTargetType
 {
     E_NONE = 0,
     E_SELF,
-    E_SINGLE_CHARACTER,
-    E_SINGLE_ENEMY,
-    E_MULTI_ENEMIES,
-    E_ALL_ENEMIES,
-    /// 추후 변경사항
-    /// E_NONE = 0,
-    /// E_SELF,
-    /// E_ALLIES,
-    E_ENEMIES,
-    E_ALL
+    E_ALLIES,
+    E_ENEMY
     /// 상세 타겟은 TargetCount로 결정
     /* 
      * TargetType이 E_SELF일때
@@ -84,9 +81,10 @@ public enum ECardSkillTargetType
      */
 }
 
-public enum ETickTrigger
+public enum ESkillTrigger
 {
     E_DEFAULT = 0,
     E_CARD_USE,
     E_ON_TARGET_HAS_SHOCK,
+    E_WITH_FRONT
 }

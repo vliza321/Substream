@@ -7,7 +7,7 @@ using UnityEngine;
 [System.Serializable]
 public struct StatusEffect
 {
-    public ECardSkillStatusType Effect;
+    public ESkillStatusType Effect;
     public int Duration;
     public float Value;
     public Unit Caster;
@@ -143,7 +143,7 @@ public class Unit
         }
     }
 
-    public void AddBuff(ECardSkillStatusType effect, int duration, float value, Unit caster)
+    public void AddBuff(ESkillStatusType effect, int duration, float value, Unit caster)
     {
         StatusEffect newEffect;
         newEffect.Effect = effect;
@@ -153,7 +153,7 @@ public class Unit
         m_statusEffect.AddFirst(newEffect);
     }
 
-    public void AddDeBuff(ECardSkillStatusType effect, int duration, float value, Unit caster)
+    public void AddDeBuff(ESkillStatusType effect, int duration, float value, Unit caster)
     {
         StatusEffect newEffect;
         newEffect.Effect = effect;

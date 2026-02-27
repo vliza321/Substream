@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class SkillOrchestrator
 {
-    private Dictionary<ECardSkillType, ISkillStrategy> m_strategies;
+    private Dictionary<ESkillType, ISkillStrategy> m_strategies;
 
     public SkillOrchestrator()
     {
-        m_strategies = new Dictionary<ECardSkillType, ISkillStrategy>{
-            { ECardSkillType.E_DAMAGE, new DamageSkillStrategy() },
-            { ECardSkillType.E_HEAL, new HeallingSkillStrategy() },
-            { ECardSkillType.E_INCREASE, new IncreaseSkillStrategy() },
-            { ECardSkillType.E_DRAW, new DrawSkillStrategy() },
-            { ECardSkillType.E_SHIELD, new DrawSkillStrategy() },
-            { ECardSkillType.E_APPLY_DEBUFF, new ApplyDebuffSkillStrategy() }
+        m_strategies = new Dictionary<ESkillType, ISkillStrategy>{
+            { ESkillType.E_DAMAGE, new DamageSkillStrategy() },
+            { ESkillType.E_HEAL, new HeallingSkillStrategy() },
+            { ESkillType.E_INCREASE, new IncreaseSkillStrategy() },
+            { ESkillType.E_DRAW, new DrawSkillStrategy() },
+            { ESkillType.E_SHIELD, new DrawSkillStrategy() },
+            { ESkillType.E_DEBUFF, new DebuffSkillStrategy() }
         };
     }
 

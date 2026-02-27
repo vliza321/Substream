@@ -7,16 +7,18 @@ using UnityEngine;
 public class CharacterSkillTableData
 {
     public int ID;
-    public ECardSkillType SkillType;
-    public ECardSkillSource SkillSource;
+    public int CardID;
+    public ESkillType SkillType;
+    public ESkillSource SkillSource;
     public float EffectValue;
     public float UpgradeEffectValue;
-    public ECardSkillStatusType StatusType;
-    public ECardSkillTargetType TargetType;
-    public int TargetCount;
     public int HitCount;
-    //public string CardText;
-    //public int NextSkillID;
+    public ESkillStatusType StatusType;
+    public ESkillTrigger Trigger;
+    public int TriggerConditionValue;
+    public ESkillTargetType TargetType;
+    public int TargetCount;
+    public ESkillSource TargetSource;
     public string Sound;
 }
 

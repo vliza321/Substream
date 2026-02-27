@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class UseCardData
 {
-    public int PrototypeUnitID;
+    public int UnitID;
     public int CardID;
 }
 
@@ -22,7 +22,7 @@ public class UseCardDataBase : DataScriptableObjects
         bool result = true;
         foreach (var data in UseCardList)
         {
-            var key = (data.PrototypeUnitID, data.CardID);
+            var key = (data.UnitID, data.CardID);
             if (UseCard.TryAdd(key, data))
             {
                 result = false;

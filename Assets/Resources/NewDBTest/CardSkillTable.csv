@@ -1,4 +1,3 @@
-int,int,enum,enum,float,float,int,enum,enum,int,enum,int,enum,string,string
 ID,CardID,SkillType,SkillSource,EffectValue,UpgradeEffectValue,HitCount,StatusType,Trigger,TriggerConditionValue,TargetType,TargetCount,TargetSource,#CardText,Sound
 0,0,E_DEFAULT,E_NONE,0,0,0,E_NONE,E_DEFAULT,0,E_NONE,0,E_NONE,"""없음""","""없음"""
 1,1001,E_DAMAGE,E_ATK,1,1.5,1,E_NONE,E_CARD_USE,0,E_ENEMY,1,E_HP,"""적 1명에게 공격력의 100%의 피해를 입힌다.""","""없음"""

@@ -57,7 +57,7 @@ public abstract class UnitManagerSystme : BaseSystem
             m_units[position].HealthPoint.Now = m_units[position].HealthPoint.Max;
     }
 
-    public void AddStatusEffect(int position, ECardSkillStatusType effect, int duration, float value, Unit caster)
+    public void AddStatusEffect(int position, ESkillStatusType effect, int duration, float value, Unit caster)
     {
         m_units[position].AddBuff(effect, duration, value, caster);
         

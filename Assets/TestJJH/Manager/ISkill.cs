@@ -5,13 +5,20 @@ using UnityEngine;
 public struct SkillContext
 {
     public TargetPair CasterUnit;
+
+    public ESkillType SkillType;
+    public ESkillTrigger SkillTrigger;
+    public int TriggerConditionValue;
+
     public bool IsCritical;
     public float CriticalValueRate;
+
+    public ESkillSource SkillSource;
     public float Value;
-    public List<TargetPair> Target;
-    public ECardSkillStatusType StatusType;
-    public ECardSkillType SkillType;
-    public ECardSkillSource SkillSource;
+    public ESkillStatusType StatusType;
+
+    public List<TargetPair> TargetUnit;
+    public ESkillSource TargetSource;
 
     public IManagerFacade SkillApplyHelper;
 }
@@ -73,10 +80,10 @@ public class Skill
         Context.CasterUnit = new TargetPair(CasterUnit.IsCharacter, CasterUnit.position);
         Context.IsCritical = false;
         Context.Value = 0;
-        Context.Target = new List<TargetPair>();
-        Context.StatusType = ECardSkillStatusType.E_NONE;
-        Context.SkillType = ECardSkillType.E_DEFAULT;
-        Context.SkillSource = ECardSkillSource.E_NONE;
+        Context.TargetUnit = new List<TargetPair>();
+        Context.StatusType = ESkillStatusType.E_NONE;
+        Context.SkillType = ESkillType.E_DEFAULT;
+        Context.SkillSource = ESkillSource.E_NONE;
         Context.StatusType = SkillData.StatusType;
         Context.SkillType = SkillData.SkillType;
         Context.SkillSource = SkillData.SkillSource;

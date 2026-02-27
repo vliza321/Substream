@@ -1,4 +1,3 @@
-int,string,enum,enum,int,string,string,int
 ID,Name,CardType,CardRarity,Cost,CardText,Texture,SkillID
 0,DEFAULT,E_NONE,E_NONE,0,"""""",Card0Texture,0
 1,CharacterSkillCard1,E_SKILL,E_NONE,0,"""스킬 사용 시 즉시 힐 및 디버프 해제""",CharacterSkillCard1Texture,0

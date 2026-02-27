@@ -87,7 +87,7 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
         m_isRunning = false;
     }
 
-    public void CalculateTargetCount(bool isCharacter, int targetCount, int maxTargetCount)
+    public void CalculateTargetCount(bool isCharacter, out int targetCount, int maxTargetCount)
     {
         if (isCharacter)
         {
@@ -124,54 +124,82 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
         yield return new WaitForSeconds(m_skillTimeRate);
         foreach (var s in skills)
         {
-            CalculateTargetCount(thisUnitIsCharacter, targetCount, s.SkillData.TargetCount);
+            CalculateTargetCount(thisUnitIsCharacter, out targetCount, s.SkillData.TargetCount);
 
             var Context = s.Context;
             switch (s.SkillData.TargetType)
             {
-                case ECardSkillTargetType.E_SELF:
-                    Context.Target.Add(new TargetPair(thisUnitIsCharacter, s.CasterUnit.position));
-                    break;
-                case ECardSkillTargetType.E_SINGLE_CHARACTER:
-                    Context.Target.Add(new TargetPair(thisUnitIsCharacter, UnityEngine.Random.Range(0, m_characterManager.Units.Count)));
-                    break;
-                case ECardSkillTargetType.E_SINGLE_ENEMY:
-                    if (thisUnitIsCharacter) Context.Target.Add(new TargetPair(false, UnityEngine.Random.Range(0, m_monsterManager.Units.Count)));
-                    else Context.Target.Add(new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count)));
-                    break;
-                case ECardSkillTargetType.E_MULTI_ENEMIES:
-                    for (int i = 0; i < targetCount; i++)
+                case ESkillTargetType.E_SELF:
+                    Context.TargetUnit.Add(new TargetPair(thisUnitIsCharacter, s.CasterUnit.position));
+                    for(int i = 1;  i < s.SkillData.TargetCount;)
                     {
                         TargetPair newTarget;
-                        if (thisUnitIsCharacter)
-                            newTarget = new TargetPair(false, UnityEngine.Random.Range(0, m_monsterManager.Units.Count));
-                        else
-                            newTarget = new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
-
-                        if (!Context.Target.Contains(newTarget)) Context.Target.Add(newTarget);
+                        newTarget = new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
+                        if (!Context.TargetUnit.Contains(newTarget))
+                        {
+                            Context.TargetUnit.Add(newTarget);
+                            i++;    
+                        }
                     }
                     break;
-                case ECardSkillTargetType.E_ALL_ENEMIES:
-                    for (int i = 0; i < targetCount; i++)
+                case ESkillTargetType.E_ALLIES:
+                    int j = 0;
+
+                    for (; j < s.SkillData.TargetCount;)
                     {
-                        TargetPair newTarget;
-                        if (thisUnitIsCharacter)
-                            newTarget = new TargetPair(false, UnityEngine.Random.Range(0, m_monsterManager.Units.Count));
+                        int pos = UnityEngine.Random.Range(0, m_characterManager.Units.Count);
+                        if (s.CasterUnit.position != pos)
+                        {
+                            TargetPair newTarget;
+                            newTarget = new TargetPair(thisUnitIsCharacter, pos);
+                            if (!Context.TargetUnit.Contains(newTarget))
+                            {
+                                Context.TargetUnit.Add(newTarget);
+                                j++;
+                            }
+                        }
                         else
-                            newTarget = new TargetPair(true, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
+                        {
+                            TargetPair newTarget;
+                            newTarget = new TargetPair(thisUnitIsCharacter, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
+                            if (!Context.TargetUnit.Contains(newTarget))
+                            {
+                                Context.TargetUnit.Add(newTarget);
+                                j++;
+                            }
+                        }
+                    }
 
-                        if (!Context.Target.Contains(newTarget)) Context.Target.Add(newTarget);
+                    break;
+                case ESkillTargetType.E_ENEMY:
+                    j = 0;
+
+                    for (; j < s.SkillData.TargetCount;)
+                    {
+                        int pos = UnityEngine.Random.Range(0, m_characterManager.Units.Count);
+                        if (s.CasterUnit.position != pos)
+                        {
+                            TargetPair newTarget;
+                            newTarget = new TargetPair(thisUnitIsCharacter, pos);
+                            if (!Context.TargetUnit.Contains(newTarget))
+                            {
+                                Context.TargetUnit.Add(newTarget);
+                                j++;
+                            }
+                        }
+                        else
+                        {
+                            TargetPair newTarget;
+                            newTarget = new TargetPair(thisUnitIsCharacter, UnityEngine.Random.Range(0, m_characterManager.Units.Count));
+                            if (!Context.TargetUnit.Contains(newTarget))
+                            {
+                                Context.TargetUnit.Add(newTarget);
+                                j++;
+                            }
+                        }
                     }
                     break;
-
-
-                case ECardSkillTargetType.E_ENEMIES:
-                    break;
-                case ECardSkillTargetType.E_ALL:
-                    break;
-
-
-                case ECardSkillTargetType.E_NONE:
+                case ESkillTargetType.E_NONE:
                     Debug.Log("cardSkil TargetType is none");
                     break;
                 default:
@@ -180,7 +208,7 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
             }
 #if UNITY_EDITOR
             StringBuilder _sTarget = new StringBuilder();
-            foreach (var targetPair in Context.Target)
+            foreach (var targetPair in Context.TargetUnit)
             {
                 if (targetPair.isCharacer)
                 {
@@ -231,30 +259,34 @@ public class SkillScheduleManager : BaseSystem, IUpdatableManager
         {
             yield return new WaitForSeconds(m_skillTimeRate);
             // value 계산 로직 (피해 감소 계산은 별도)
-            bool critical = (UnityEngine.Random.Range(0, 1001) < (s.CasterUnit.CriticalTriggerRate.Now * 100));
+            bool critical = (UnityEngine.Random.Range(0, 101) < (s.CasterUnit.CriticalTriggerRate.Now * 100));
             float rateValue = 0;
             switch (s.SkillData.SkillSource)
             {
-                case ECardSkillSource.E_NONE:
-                case ECardSkillSource.E_DECK:
-                case ECardSkillSource.E_SPEED:
-                case ECardSkillSource.E_AETHER:
+                case ESkillSource.E_NONE:
+                case ESkillSource.E_DECK:
+                case ESkillSource.E_SPEED:
+                case ESkillSource.E_AETHER:
+                case ESkillSource.E_DAMAGED_INFLICTED:
                     rateValue = 1;
                     critical = false;
                     break;
-                case ECardSkillSource.E_ATK:
+                case ESkillSource.E_ATK:
                     rateValue = s.CasterUnit.AttackPoint.Now;
                     break;
-                case ECardSkillSource.E_DAMAGED_INFLICTED:
-                    rateValue = 10;
-                    break;
-                case ECardSkillSource.E_DEF:
+                case ESkillSource.E_DEF:
                     rateValue = s.CasterUnit.DefendPoint.Now;
+                    break;
+                case ESkillSource.E_HP:
+                    rateValue = s.CasterUnit.HealthPoint.Now;
                     break;
             }
             s.Context.IsCritical = critical;
             s.Context.CriticalValueRate = s.CasterUnit.CriticalValueRate.Now;
             s.Context.Value = (s.SkillData.EffectValue * rateValue);
+            s.Context.TargetSource = s.SkillData.TargetSource;
+            s.Context.SkillTrigger = s.SkillData.Trigger;
+            s.Context.TriggerConditionValue = s.SkillData.TriggerConditionValue;
 
             m_skillOrchestrator.Execute(s.Context);
             m_masterManager.Synchronization();

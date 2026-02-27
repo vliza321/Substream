@@ -11,7 +11,7 @@ public class DamageSkillStrategy : ISkillStrategy
 {
     public void Execute(SkillContext context)
     {
-        foreach(var t in context.Target)
+        foreach(var t in context.TargetUnit)
         {
             context.SkillApplyHelper.ApplyDamage(t, context.Value, context.IsCritical, context.CriticalValueRate);
         }
@@ -22,7 +22,7 @@ public class HeallingSkillStrategy : ISkillStrategy
 {
     public void Execute(SkillContext context)
     {
-        foreach (var t in context.Target)
+        foreach (var t in context.TargetUnit)
         {
             context.SkillApplyHelper.ApplyHeal(t, context.Value);
         }
@@ -45,7 +45,7 @@ public class DrawSkillStrategy : ISkillStrategy
     }
 }
 
-public class ApplyDebuffSkillStrategy : ISkillStrategy
+public class DebuffSkillStrategy : ISkillStrategy
 { 
     public void Execute(SkillContext context)
     {

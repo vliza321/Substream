@@ -1,6 +1,6 @@
-ID,SkillType,SkillSource,EffectValue,TargetType,TargetCount,HitCount,Trigger,#SkillText,NextSkillID
-1,E_HEAL,E_HP,0.5,E_ALL_ALLIES,99,1,E_ON_SKILL_ACTIVE,"스킬 사용 시 즉시 힐 및 (디버프 해제)",2
-2,E_CLEANSE,E_NONE,0,E_ALL_ALLIES,99,1,E_ON_SKILL_ACTIVE,"(스킬 사용 시 즉시 힐) 및 디버프 해제",0
-3,E_INCREASE,E_AETHER,99,E_NONE,1,1,E_ON_SKILL_ACTIVE,"코스트를 즉시 최대치까지 회복",0
-4,E_DECREASE,E_DEF,0.4,E_ALL_ENEMIES,1,1,E_ON_SKILL_ACTIVE,"모든 적의 방어력을 40% 감소",0
-5,E_DAMAGE,E_ATK,1.5,E_ALL_ENEMIES,99,1,E_ON_USE_ATTACK_CARD,"2턴 간 공격 카드 사용 시 적 전체에게 공격력의 150%로 피해를 가하는 추가 공격 발동",0
+ID,CardID,SkillType,SkillSource,EffectValue,UpgradeEffectValue,HitCount,StatusType,Trigger,TriggerConditionValue,TargetType,TargetCount,TargetSource,#CardText,Sound
+1,1,E_HEAL,E_NONE,0.5,1.5,1,E_NONE,E_DEFAULT,0,E_ALLIES,99,E_HP,"""스킬 사용 시 즉시 아군 전체 힐 (및 디버프 해제)""","""없음"""
+2,1,E_ETC,E_NONE,0,2,1,E_NONE,E_CARD_USE,0,E_ALLIES,99,E_NONE,"""스킬 사용 시 즉시 아군 전체 (힐 및) 디버프 해제""","""없음"""
+3,2,E_INCREASE,E_AETHER,99,3,0,E_NONE,E_CARD_USE,0,E_SELF,0,E_AETHER,"""에테르를 즉시 최대치까지 회복""","""없음"""
+4,3,E_DEBUFF,E_DEF,0.4,0.5,1,E_NONE,E_CARD_USE,0,E_ENEMY,1,E_DEF,"""모든 적의 방어력을 40% 감소""","""없음"""
+5,4,E_DEBUFF,E_NONE,2,2,1,E_NONE,E_CARD_USE,0,E_SELF,1,E_NONE,"""2턴 간 공격 카드 사용 시 적 전체에게 공격력의 150%로 피해를 가하는 추가 공격 발동""","""없음"""

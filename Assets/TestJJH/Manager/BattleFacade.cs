@@ -72,7 +72,7 @@ public class BattleFacade : IManagerFacade
     }
 
     // 상태 관련
-    public void AddStatusEffect(TargetPair target, ECardSkillStatusType effect, int duration, float value, Unit caster)
+    public void AddStatusEffect(TargetPair target, ESkillStatusType effect, int duration, float value, Unit caster)
     {
         if (target.isCharacer)
         {

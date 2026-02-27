@@ -1,4 +1,3 @@
-int,int,enum,enum,float,float,int,enum,eunm,int,enum,int,enum,string,string
 ID,CardID,SkillType,SkillSource,EffectValue,UpgradeEffectValue,HitCount,StatusType,Trigger,TriggerConditionValue,TargetType,TargetCount,TargetSource,#CardText,Sound
 1,1,E_HEAL,E_NONE,0.5,1.5,1,E_NONE,E_DEFAULT,0,E_ALLIES,99,E_HP,"""스킬 사용 시 즉시 아군 전체 힐 (및 디버프 해제)""","""없음"""
 2,1,E_ETC,E_NONE,0,2,1,E_NONE,E_CARD_USE,0,E_ALLIES,99,E_NONE,"""스킬 사용 시 즉시 아군 전체 (힐 및) 디버프 해제""","""없음"""

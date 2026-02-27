@@ -62,7 +62,7 @@ public class CardManager : BaseSystem
             {
                 foreach (var uc in DataBase.UseCardDataBase.UseCard)
                 {
-                    if(CTD.ID == uc.Value.PrototypeUnitID)
+                    if(CTD.ID == uc.Value.UnitID)
                     {
                         Card newCard = new Card();
                         newCard.Initialize(
@@ -110,7 +110,7 @@ public class CardManager : BaseSystem
                 }
                 m_graveyard[key].Clear();
             }
-            // 랜덤으로 1장 뽑아 넣고 덱에서 제외
+            // 랜덤으로 1장 뽑아 핸드에 넣고 덱에서 제외
             int address = UnityEngine.Random.Range(0, m_deck[key].Count);
             m_hand.s_card.Add(m_deck[key][address]);
             m_deck[key].RemoveAt(address);
