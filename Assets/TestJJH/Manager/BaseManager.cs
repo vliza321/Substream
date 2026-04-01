@@ -20,17 +20,18 @@ public abstract class BaseManager : AccessableDataBase
     public virtual void SetTurn()
     {
     }
-    public virtual void UseCard(Card card)
-    {
-    }
     public bool ConnectsDataBase()
     {
-        if(!ConnectDataBase()) 
+        if (!ConnectDataBase())
         {
-            return false; 
+            return false;
         }
         return true;
     }
+    public virtual void UseCard(Card card)
+    {
+    }
+    public abstract void UnitDying(Unit unit);
 }
 
 interface IUpdatableManager

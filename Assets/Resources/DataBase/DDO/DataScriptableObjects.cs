@@ -31,26 +31,30 @@ public enum ESkillType
 {
     E_DEFAULT = 0,
     E_DAMAGE,
+    E_CONDITIONAL_DAMAGE,
     E_HEAL,
     E_INCREASE,
-    E_DRAW,
     E_SHIELD,
     E_DEBUFF,
     E_ETC,
-    E_CONDITIONAL_DAMAGE
+    E_DRAW,
+
+    //100번부터는 스킬이 아닌 시스템 액션
+    E_TURNEND = 100,
+    E_UNITDYING
 }
 
 [System.Serializable]
 public enum ESkillSource
 {
     E_NONE= 0,
-    E_DECK,
-    E_SPEED,
-    E_AETHER,
-    E_DAMAGED_INFLICTED,
-
     E_ATK,
+    E_DAMAGED_INFLICTED,
+    E_AETHER,
+    E_DECK,
     E_DEF,
+    E_SPEED,
+
     E_HP
 }
 
@@ -61,7 +65,6 @@ public enum ESkillStatusType
     E_BLEED,
     E_SHOCK,
     E_OVERLOAD,
-
 }
 
 [System.Serializable]

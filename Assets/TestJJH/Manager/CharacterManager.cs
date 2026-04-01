@@ -22,16 +22,15 @@ public class CharacterManager : UnitManagerSystme
     /// 4. 파티에서 지정한 위치 순서에 맞게 정렬하여 add
     /// </summary>
     public override void DataInitialize()
-    {
+    {   
         for (int i = 0; i < m_partyCount; i++)
         {
-            CharacterTableData pc = DataBase.Character(i + 1);
-            pc.position = i;
-            pc.IsCharacter = true;
+            UnitTableData PU = DataBase.UnitTable(i + 1);
+            UnitTableData newUnit = new UnitTableData(PU);
 
-            pc.Init(pc.HP, pc.ATK, pc.DEF, pc.Speed, pc.CriticalRate, pc.CriticalDamage);
+            newUnit.Init(this, true, i, PU.HP, PU.ATK, PU.DEF, PU.Speed, PU.CriticalRate, PU.CriticalDamage);
             
-            m_units.Add(pc);
+            m_units.Add(newUnit);
         }
         for (int i = m_partyCount; i < 4; i++)
         {
@@ -42,5 +41,13 @@ public class CharacterManager : UnitManagerSystme
     public override void UseCard(Card card)
     {
         base.UseCard(card);
+    }
+
+    public override void UnitDying(Unit unit)
+    {
+        if(unit.IsCharacter)
+        {
+            m_units.Remove(unit);
+        }
     }
 }

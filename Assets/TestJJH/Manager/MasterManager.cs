@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.GraphicsBuffer;
+using static UnityEngine.UI.CanvasScaler;
 
 public class MasterManager : MonoBehaviour
 {
@@ -23,7 +25,7 @@ public class MasterManager : MonoBehaviour
     [SerializeField]
     private MonsterManager m_monsterManager;
     [SerializeField]
-    private SkillScheduleManager m_skillScheduleManager;
+    private FlowScheduleManager m_skillScheduleManager;
 #endif
 
 #if true // UI
@@ -47,7 +49,7 @@ public class MasterManager : MonoBehaviour
     public TurnManager TurnManager { get => m_turnManager;}
     public CardManager CardManager { get => m_cardManager; }
     public MonsterManager MonsterManager { get => m_monsterManager; }
-    public SkillScheduleManager SkillScheduleManager { get => m_skillScheduleManager; }
+    public FlowScheduleManager SkillScheduleManager { get => m_skillScheduleManager; }
 
     public CharacterUIManager CharacterUIManager { get => m_characterUIManager; }
     public TurnUIManager TurnUIManager { get => m_turnUIManager; }
@@ -60,6 +62,7 @@ public class MasterManager : MonoBehaviour
     private LinkedList<BaseSystem> m_managers = new LinkedList<BaseSystem>();
     private LinkedList<BaseUI> m_UIManagers = new LinkedList<BaseUI>();
 #endif
+
     public void Awake()
     {
         DataBaseManager.Initialize();
@@ -88,6 +91,11 @@ public class MasterManager : MonoBehaviour
             if (node.Value.TryGetComponent<IUpdatableManager>(out temtManager)) m_IUpdatableManagers.AddFirst(temtManager);
         }
 
+        for (LinkedListNode<BaseUI> node = m_UIManagers.First; node != null; node = node.Next)
+        {
+            IUpdatableManager temtManager;
+            if (node.Value.TryGetComponent<IUpdatableManager>(out temtManager)) m_IUpdatableManagers.AddFirst(temtManager);
+        }
         /***************************************Initialize***************************************/
 
         for (LinkedListNode<BaseSystem> node = m_managers.First; node != null; node = node.Next)
@@ -150,33 +158,59 @@ public class MasterManager : MonoBehaviour
 
     public void SetTurn()
     {
-        foreach(var manager in m_managers)
+        m_skillScheduleManager.RegistSetTurnEventFlow();
+    }
+
+    public void ApplySetTurn()
+    {
+        Debug.Log("SETTURN");
+        foreach (var manager in m_managers)
         {
             manager.SetTurn();
         }
-        foreach(var uiManager in m_UIManagers)
+    }
+
+    public void ApplyUISetTurn()
+    {
+        foreach (var uiManager in m_UIManagers)
         {
             uiManager.SetTurn();
         }
     }
 
-    public void UseCard(Card card)
+
+
+    public bool UseCard(Card card)
     {
+        if(!m_turnManager.SetEther(card.CardData.Cost))
+        {
+            return false;
+        }
+        m_turnUIManager.UseCard(card);
         card.Execute();
 
+        return true;
+    }
+
+    public void UnitDying(TargetPair unit)
+    {
+        Debug.Log(unit.isCharacter + "" + unit.position);
+        m_skillScheduleManager.UnitDying(unit);
+    }
+
+    public void ApplyUnitDying(Unit unit)
+    {
         foreach (var manager in m_managers)
         {
-            manager.UseCard(card);
+            manager.UnitDying(unit);
         }
+    }
+
+    public void ApplyUIUnitDying(Unit unit)
+    {
         foreach (var uiManager in m_UIManagers)
         {
-            uiManager.UseCard(card);
-        }
-
-        if (m_cardManager.ActiveCardNum == 0 || m_turnManager.EtherCount <= 0)
-        { 
-            SetTurn();
-            return;
+            uiManager.UnitDying(unit);
         }
     }
 }

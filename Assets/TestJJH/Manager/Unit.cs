@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -82,11 +83,23 @@ public class Stat
 }
 
 [System.Serializable]
-public class Unit
+public abstract class Unit
 {
-    public bool IsCharacter = true;
+    private UnitManagerSystme m_system;
+    private bool m_isCharacter = true;
     public GameObject thisObject;
-    public int position;
+    private int m_position;
+    public int Position
+    {
+        get { return m_position; }
+    }
+    public abstract int IngameUnitID();
+
+    public bool IsCharacter
+    {
+        get { return m_isCharacter; }
+    }
+
 
     public Stat HealthPoint => m_stats[EStatType.HP];
     public Stat AttackPoint => m_stats[EStatType.ATK];
@@ -98,7 +111,7 @@ public class Unit
     [SerializeField]
     public Stat DebugHP;
     [SerializeField]
-    private UnitUI m_ui;
+    private UnitSlot m_ui;
 
     // 전투 관련 기본 스탯
     [SerializeField]
@@ -113,8 +126,12 @@ public class Unit
         get { return m_statusEffect; }
     }
 
-    public void Init(float hp, float atk, float def, float speed, float CriticalTriggerRate, float CriticalValueRate)
+    public void Init(UnitManagerSystme system, bool isCharacter, int pos, float hp, float atk, float def, float speed, float CriticalTriggerRate, float CriticalValueRate)
     {
+        m_system = system;
+        m_isCharacter = isCharacter;
+        m_position = pos;
+
         m_stats.Add(EStatType.HP, new Stat(hp));
         m_stats.Add(EStatType.ATK, new Stat(atk));
         m_stats.Add(EStatType.DEF, new Stat(def));
@@ -130,16 +147,21 @@ public class Unit
         // 상태이상 자체 효과
         foreach (var effectIT in m_statusEffect)
         {
-            
+            m_system.StatusEffectExecuteStrategy[effectIT.Effect].Execute(this);
         }
-        foreach (var effectIt in m_statusEffect)
+
+        var effectIterator = m_statusEffect.First;
+        while(effectIterator.Next != null)
         {
-            var effectDuration = effectIt.Duration;
+            var next = effectIterator.Next;
+            var effectDuration = effectIterator.Value.Duration;
             effectDuration--;
-            if (effectIt.Duration < 0)
+            if (effectDuration < 0)
             {
-                m_statusEffect.Remove(effectIt);
+                m_statusEffect.Remove(effectIterator);
+                continue;
             }
+            effectIterator = next;
         }
     }
 
@@ -161,5 +183,10 @@ public class Unit
         newEffect.Value = value;
         newEffect.Caster = caster;
         m_statusEffect.AddLast(newEffect);
+    }
+
+    public void UnitDead()
+    {
+        //m_system.RemoveUnit(this);
     }
 }

@@ -22,9 +22,22 @@ public abstract class UnitManagerSystme : BaseSystem
     protected List<Unit> m_units;
 
     protected int m_partyCount;
+
+    public readonly Dictionary<ESkillStatusType, IStatusEffectStrategy> StatusEffectExecuteStrategy = new Dictionary<ESkillStatusType, IStatusEffectStrategy> {
+        {ESkillStatusType.E_NONE, new NoneStatusEffectStrategy() },
+        {ESkillStatusType.E_BLEED, new BleedStatusEffectStrategy() },
+        {ESkillStatusType.E_SHOCK, new ShockStatusEffectStrategy() },
+        {ESkillStatusType.E_OVERLOAD, new OverLoadStatusEffectStrategy() },
+        };
+
     public List<Unit> Units
     {
         get { return m_units; }
+    }
+
+    public Unit Unit(int position)
+    {
+        return m_units[position];
     }
 
     public override void SetTurn()
@@ -32,34 +45,66 @@ public abstract class UnitManagerSystme : BaseSystem
         
     }
 
-    public void DamageToUnita(int position, float Amount, bool isCritical, float criticalDamageRate)
+    public void DamageToUnit(Flow flow, ActionContext context, BattleFacade battleFacade, UIFacade uiFacade)
     {
         float CriticalDamageValue = 0.3f; // 고정 치명타 피해량 계수
-        Debug.Log("데미지" + Amount * (1 - m_units[position].DefendPoint.Now / (m_units[position].DefendPoint.Now + 500)));
-        if (isCritical)
+        float FinalAmount = Amount;
+        FinalAmount = (1.0f + (isCritical ? criticalDamageRate * CriticalDamageValue : 0.0f)) * FinalAmount;
+        FinalAmount = FinalAmount * (1 - m_units[targetPosition].DefendPoint.Now / (m_units[targetPosition].DefendPoint.Now + 1000));
+        m_units[targetPosition].HealthPoint.Now -= FinalAmount;
+
+        context.UIApplyHelper.ApplyDamage(context.CasterUnit.isCharacter, context.CasterUnit.position, targetIsCharacter, targetPosition, FinalAmount);
+
+        if(context.StatusType != ESkillStatusType.E_NONE)
         {
-            Amount = (1.0f + (isCritical ? criticalDamageRate * CriticalDamageValue : 0.0f)) * Amount; 
+            AddStatusEffect(context, 
+                targetIsCharacter, targetPosition, 
+                context.StatusType, 
+                1/*여기 상태 이상 지속 시간 context값*/, 
+                0/*여기 지속 피해 관련 수치 context값*/, 
+                context.CastUnit);
         }
-        m_units[position].HealthPoint.Now -=
-            Amount * (1 - m_units[position].DefendPoint.Now / (m_units[position].DefendPoint.Now + 500));
 
         // 사망 콜
-        if (m_units[position].HealthPoint.Now < 0) return;
+        if (m_units[targetPosition].HealthPoint.Now < 0)
+        {
+            m_masterManager.UnitDying(new TargetPair(targetIsCharacter, targetPosition));
+            return;
+        }
     }
 
-    public void HealToUnit(int position, float Amount)
+    public void HealToUnit(Flow flow, ActionContext context, BattleFacade battleFacade, UIFacade uiFacade)
     {
         Debug.Log("힐" + Amount);
-        m_units[position].HealthPoint.Now += Amount;
+        m_units[targetPosition].HealthPoint.Now += Amount;
 
         // 오버 힐 처리
-        if (m_units[position].HealthPoint.Now > m_units[position].HealthPoint.Max)
-            m_units[position].HealthPoint.Now = m_units[position].HealthPoint.Max;
+        if (m_units[targetPosition].HealthPoint.Now > m_units[targetPosition].HealthPoint.Max)
+            m_units[targetPosition].HealthPoint.Now = m_units[targetPosition].HealthPoint.Max;
+
+        context.UIApplyHelper.ApplyHeal(context.CasterUnit.isCharacter, context.CasterUnit.position, targetIsCharacter, targetPosition, Amount);
+
+        if (context.StatusType != ESkillStatusType.E_NONE)
+        {
+            AddStatusEffect(context,
+                targetIsCharacter, targetPosition,
+                context.StatusType,
+                1/*여기 상태 이상 지속시간 context값*/,
+                0/*여기 지속 피해 관련 수치 context값*/,
+                context.CastUnit);
+        }
+
+        context.UIApplyHelper.ApplyHeal(context.CasterUnit.isCharacter, context.CasterUnit.position, targetIsCharacter, targetPosition, Amount);
     }
 
-    public void AddStatusEffect(int position, ESkillStatusType effect, int duration, float value, Unit caster)
+    public void AddStatusEffect(Flow flow, ActionContext context, BattleFacade battleFacade, UIFacade uiFacade)
     {
-        m_units[position].AddBuff(effect, duration, value, caster);
-        
+        m_units[targetPosition].AddBuff(effect, duration, value, caster);
+        context.UIApplyHelper.AddStatusEffect(targetIsCharacter, targetPosition, effect, duration, caster);
+    }
+
+    public bool IsAlive(Unit unit)
+    {
+        return m_units.Contains(unit);
     }
 }

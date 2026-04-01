@@ -10,21 +10,22 @@ public class CSVManager : MonoBehaviour
 {
     private static CSVManager instance;
 
+    [SerializeField]
     private List<string> FILE_NAME = new List<string> { 
         "CardTable",
-        "UseCard",
-        "CardSkillTable",
-        "CharacterTable",
+        "UseCardTable",
+        "SkillTable",
+        "UnitTable",
         "LocalUser",
         //"StatusEffect",
     };
     //CSV파일 파싱 직후 저장 공간
-    private List<Dictionary<string, object>> CardSkillTable = new List<Dictionary<string, object>>();
     private List<Dictionary<string, object>> CardTable = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> CharacterTable = new List<Dictionary<string, object>>();
+    private List<Dictionary<string, object>> UseCardTable = new List<Dictionary<string, object>>();
+    private List<Dictionary<string, object>> SkillTable = new List<Dictionary<string, object>>();
+    private List<Dictionary<string, object>> UnitTable = new List<Dictionary<string, object>>();
     private List<Dictionary<string, object>> LocalUser = new List<Dictionary<string, object>>();
     private List<Dictionary<string, object>> StatusEffect = new List<Dictionary<string, object>>();
-    private List<Dictionary<string, object>> UseCard = new List<Dictionary<string, object>>();
 
     public void Initialize(Dictionary<string, DataScriptableObjects> database)
     {

@@ -2,41 +2,42 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct SkillContext
+public struct ActionContext
 {
-    public TargetPair CasterUnit;
+    public bool IsDone;
 
     public ESkillType SkillType;
     public ESkillTrigger SkillTrigger;
     public int TriggerConditionValue;
 
-    public bool IsCritical;
-    public float CriticalValueRate;
-
     public ESkillSource SkillSource;
-    public float Value;
     public ESkillStatusType StatusType;
 
-    public List<TargetPair> TargetUnit;
+    public bool IsCritical;
+    public float CriticalValueRate;
+    public float Value;
     public ESkillSource TargetSource;
 
-    public IManagerFacade SkillApplyHelper;
+    public List<TargetPair> TargetUnits;
+
+    public SkillTableData SkillData;
 }
+
 public struct TargetPair
 {
-    public bool isCharacer;
+    public bool isCharacter;
     public int position;
 
-    public TargetPair(bool isCharacer, int position)
+    public TargetPair(bool isCharacter, int position)
     {
-        this.isCharacer = isCharacer;
+        this.isCharacter = isCharacter;
         this.position = position;
     }
 }
 
 public class Skill
 {
-    public SkillContext Context;
+    public ActionContext Context;
     public Unit CasterUnit { get; private set; }
     //public int UnitSpeed = 0;
     //public bool IsCharacter = true;
@@ -47,7 +48,7 @@ public class Skill
     //public int position;
     //public float MaxHP;
 
-    public CardSkillTableData SkillData;
+    public SkillTableData SkillData;
     //  public int ID;
     //  public ECardSkillType SkillType;
     //  public ECardSkillSource SkillSource;
@@ -70,24 +71,23 @@ public class Skill
     //    public string CardText;
     //    public string Texture;
     //    public int SkillID;
-    public Skill(Unit caster, CardSkillTableData SkillData, CardTableData CasterCard, IManagerFacade skillApplyHelper)
+    public Skill(Unit caster, SkillTableData SkillData, CardTableData CasterCard)
     {
         CasterUnit = caster;
         this.SkillData = SkillData;
         this.CasterCard = CasterCard;
         
-        Context = new SkillContext();
-        Context.CasterUnit = new TargetPair(CasterUnit.IsCharacter, CasterUnit.position);
+        Context = new ActionContext();
+        Context.SkillData = SkillData;
         Context.IsCritical = false;
         Context.Value = 0;
-        Context.TargetUnit = new List<TargetPair>();
+        Context.TargetUnits = new List<TargetPair>();
         Context.StatusType = ESkillStatusType.E_NONE;
         Context.SkillType = ESkillType.E_DEFAULT;
         Context.SkillSource = ESkillSource.E_NONE;
         Context.StatusType = SkillData.StatusType;
         Context.SkillType = SkillData.SkillType;
         Context.SkillSource = SkillData.SkillSource;
-        Context.SkillApplyHelper = skillApplyHelper;
     }
 
     public void Initialize() { }
@@ -96,10 +96,10 @@ public class Skill
 public class UnitSkill
 {
     public Unit CasterUnit { get; private set; }
-    public CardSkillTableData SkillData;
+    public SkillTableData SkillData;
     public CardTableData CasterCard;
 
-    public UnitSkill(Unit caster, CardSkillTableData SkillData, CardTableData CasterCard)
+    public UnitSkill(Unit caster, SkillTableData SkillData, CardTableData CasterCard)
     {
         CasterUnit = caster;
         this.SkillData = SkillData;

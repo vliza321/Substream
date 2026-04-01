@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -19,22 +20,25 @@ public class MonsterManager : UnitManagerSystme
     {
         for (int i = 0; i < 1; i++)
         {
-            MonsterTableData monster = new MonsterTableData();
-            monster.UserID = 0;
-            monster.PrototypeUnitID = i;
-            monster.InstanceID = 0;
-            monster.Speed = 9;
-            monster.IsCharacter = false;
-            monster.position = i + 100;
+            UnitTableData PU = DataBase.UnitTable(i + 1);
+            UnitTableData newUnit = new UnitTableData(PU);
 
-            monster.Init(1000, 1000, 1000, monster.Speed, 3, 3);
+            newUnit.Init(this, false, i, PU.HP, PU.ATK, PU.DEF, PU.Speed, PU.CriticalRate, PU.CriticalDamage);
 
-            m_units.Add(monster);
+            m_units.Add(newUnit);
         }
     }
 
     public override void UseCard(Card card)
     {
         base.UseCard(card);
+    }
+
+    public override void UnitDying(Unit unit)
+    {
+        if (!unit.IsCharacter)
+        {
+            m_units.Remove(unit);
+        }
     }
 }

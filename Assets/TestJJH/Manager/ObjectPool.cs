@@ -41,7 +41,10 @@ public class ObjectPool
     public GameObject GetObject()
     {
         if (_queue.Count == 0)
-            return null;
+        {
+            _caching = Object.Instantiate(_prefab);
+            return _caching;
+        }
 
         _caching = _queue.Dequeue();
         _caching.gameObject.SetActive(true);
@@ -70,6 +73,21 @@ public class ObjectPool<T> where T : UIObject
     private T _caching;
     public int Count { get { return _queue.Count; } }
 
+    private Transform _parent;
+
+    public ObjectPool(T obj, int maxCount, Transform parent)
+    {
+        _prefab = obj;
+        _queue = new Queue<T>(maxCount);
+        _maxCount = maxCount;
+        _parent = parent;
+
+        for (int i = 0; i < _maxCount; i++)
+        {
+            ReleaseObject(Object.Instantiate(obj));
+        }
+    }
+
     public ObjectPool(T obj, int maxCount)
     {
         _prefab = obj;
@@ -87,7 +105,10 @@ public class ObjectPool<T> where T : UIObject
     public T GetObject()
     {
         if (_queue.Count == 0)
-            return null;
+        {
+            _caching = Object.Instantiate(_prefab);
+            return _caching;
+        }
 
         _caching = _queue.Dequeue();
         _caching.gameObject.SetActive(true);
@@ -96,10 +117,16 @@ public class ObjectPool<T> where T : UIObject
 
     public bool ReleaseObject(T obj) 
     {
-        if (_maxCount <= _queue.Count) return false;
+        if (_maxCount <= _queue.Count)
+        {
+            Debug.LogError("오브젝트 풀 오류 발생");
+            return false;
+        }
 
         obj.gameObject.SetActive(false);
         _queue.Enqueue(obj);
+        obj.transform.parent = _parent;
+
         return true;
     }
 }

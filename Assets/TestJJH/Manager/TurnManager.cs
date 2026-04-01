@@ -14,20 +14,24 @@ public class TurnManager : BaseSystem
     private MonsterUIManager m_monsterUIManager;
 
     private int m_turnCount;
-    private int m_etherCount;
+    private int m_currentAetherCount;
 
     private LinkedList<Unit> m_unitFlow;
     private Unit m_currentTurnUnit;
-
 
     public int TurnCount
     {
         get { return m_turnCount; }
     }
 
-    public int EtherCount
+    public int CurrentAetherCount
     {
-        get { return m_etherCount; }
+        get { return m_currentAetherCount; }
+    }
+
+    public int CurrentTurnMaxEtherCount
+    {
+        get { return m_currentTurnMaxEtherCount; }
     }
 
     public Unit CurrentTurnUnit
@@ -40,14 +44,14 @@ public class TurnManager : BaseSystem
         get { return m_unitFlow; }
     }
 
-    private const int ETHERCOUNT = 7;
-    public int m_currentTurnEtherCount;
+    private const int AETHERCOUNT = 7;
+    private int m_currentTurnMaxEtherCount;
 
     public override void Initialize()
     {
         m_turnCount = 1;
-        m_etherCount = ETHERCOUNT;
-        m_currentTurnEtherCount = m_etherCount;
+        m_currentTurnMaxEtherCount = AETHERCOUNT;
+        m_currentAetherCount = m_currentTurnMaxEtherCount;
         m_unitFlow = new LinkedList<Unit>();
     }
     public override void InitializeReference(MasterManager masterManager)
@@ -81,19 +85,7 @@ public class TurnManager : BaseSystem
         List<Unit> units = new List<Unit>();
         foreach (var unit in m_unitFlow)
         {
-            int speed;
-            if(unit is CharacterTableData character)
-            {
-                speed = character.Speed;
-            }
-            else if(unit is MonsterTableData monster)
-            {
-                speed = monster.Speed;
-            }
-            else
-            {
-                continue;
-            }
+            int speed = (int)unit.SpeedPoint.Now;
             units.Add(unit);
         }
         units.Sort((a, b) =>
@@ -101,7 +93,8 @@ public class TurnManager : BaseSystem
             int cmp = b.SpeedPoint.Now.CompareTo(a.SpeedPoint.Now);
             if (cmp == 0)
             {
-                return Random.Range(-1, 2); // -1, 0, 1
+                b.IsCharacter.CompareTo(a.IsCharacter);
+                return cmp;
             }
             return cmp;
         });
@@ -139,11 +132,9 @@ public class TurnManager : BaseSystem
         m_unitFlow.RemoveFirst();
 
         m_turnCount++;
-        m_etherCount = ETHERCOUNT + (int)(m_turnCount / 3);
-        m_currentTurnEtherCount = m_etherCount;
+        m_currentAetherCount = AETHERCOUNT + (int)(m_turnCount / 3);
+        m_currentTurnMaxEtherCount = m_currentAetherCount;
 
-        m_characterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
-        m_monsterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
         units.Clear();
     }
 
@@ -152,18 +143,30 @@ public class TurnManager : BaseSystem
         SetEther(card.CardData.Cost);
     }
 
-    private bool SetEther(int EtherCount)
+    public bool SetEther(int EtherCount)
     {
-        if (m_etherCount < EtherCount)
+        if (m_currentAetherCount < EtherCount)
             return false;
-        m_etherCount -= EtherCount;
+        m_currentAetherCount -= EtherCount;
         //Debug.Log(TurnCount + " / Cost : " + EtherCount + "남은거 : " + m_etherCount);
         return true;
     }
 
     public override void Synchronization()
     {
-        m_characterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
-        m_monsterUIManager.TurnOffHPSlider(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.position);
+        m_characterUIManager.SetHPSliderBGI(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.Position);
+        m_monsterUIManager.SetHPSliderBGI(m_currentTurnUnit.IsCharacter, m_currentTurnUnit.Position);
+    }
+
+    public override void UnitDying(Unit unit)
+    {
+        LinkedList<Unit> list = new LinkedList<Unit>();
+        foreach(var uf in m_unitFlow)
+        {
+            if (unit != uf) list.AddLast(uf);
+            else continue;
+        }
+        m_unitFlow.Clear();
+        m_unitFlow = list;
     }
 }
