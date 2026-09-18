@@ -9,6 +9,13 @@ using UnityEngine;
 using UnityEngine.TextCore.Text;
 using static UnityEngine.UI.CanvasScaler;
 
+[System.Serializable]
+public class Modifie
+{
+    public int Duration;
+    public int Amount;
+}
+
 public class TurnManager : BaseSystem
 {
     private CharacterManager m_characterManager;
@@ -18,7 +25,15 @@ public class TurnManager : BaseSystem
     private int m_turnCount;
     [SerializeField]
     private int m_currentAetherCount;
-    private int m_currentTurnMaxAetherCount;
+    [SerializeField]
+    private int m_MaxAetherCount;
+
+    [SerializeField]
+    private int m_battleAddModifieAetherCount;
+    [SerializeField]
+    private List<Modifie> m_turnAddModifieAetherCount; 
+    [SerializeField]
+    private List<Modifie> m_roundAddModifieAetherCount; 
 
     private LinkedList<Unit> m_unitFlow;
     private Unit m_currentTurnUnit;
@@ -49,9 +64,15 @@ public class TurnManager : BaseSystem
     {
         get { return m_currentAetherCount; }
     }
-    public int CurrentTurnMaxEtherCount
+
+    public int CurrentTurnMaxAetherCount
     {
-        get { return m_currentTurnMaxAetherCount; }
+        get {
+            return m_MaxAetherCount
+                + m_turnAddModifieAetherCount.Sum(r => r.Amount)
+                + m_roundAddModifieAetherCount.Sum(r => r.Amount)
+                + m_battleAddModifieAetherCount; 
+        }
     }
 
     public Unit CurrentTurnUnit
@@ -67,10 +88,30 @@ public class TurnManager : BaseSystem
     private const int AETHERCOUNT = 7;
 
 
-    public void ExpendMaxAetherCount(int amount)
+    public void ExpendTurnModifieAetherCount(int amount, int duration)
     {
         m_currentAetherCount += amount;
-        m_currentTurnMaxAetherCount += amount;
+        Modifie modifie = new Modifie();
+        modifie.Amount = amount;
+        modifie.Duration = duration;
+
+        m_turnAddModifieAetherCount.Add(modifie);
+    }
+
+    public void ExpendRoundModifieAetherCount(int amount, int duration)
+    {
+        m_currentAetherCount += amount;
+        Modifie modifie = new Modifie();
+        modifie.Amount = amount;
+        modifie.Duration = duration;
+
+        m_roundAddModifieAetherCount.Add(modifie);
+    }
+
+    public void ExpendBattleModifieAetherCount(int amount)
+    {
+        m_currentAetherCount += amount;
+        m_battleAddModifieAetherCount += amount;
     }
 
     public override void Initialize()
@@ -78,8 +119,11 @@ public class TurnManager : BaseSystem
         m_turnInputLock = false;
         m_roundCount = 1;
         m_turnCount = 1;
-        m_currentTurnMaxAetherCount = AETHERCOUNT;
-        m_currentAetherCount = m_currentTurnMaxAetherCount;
+        m_MaxAetherCount = AETHERCOUNT;
+        m_currentAetherCount = m_MaxAetherCount;
+        m_battleAddModifieAetherCount = 0;
+        m_turnAddModifieAetherCount = new List<Modifie>();
+        m_roundAddModifieAetherCount = new List<Modifie>();
         m_unitFlow = new LinkedList<Unit>();
         m_unitTurnRecorder = new Dictionary<Unit, int>();
     }
@@ -197,8 +241,17 @@ public class TurnManager : BaseSystem
         m_unitFlow.RemoveFirst();
 
         m_turnCount++;
-        m_currentAetherCount = AETHERCOUNT + (int)(m_turnCount / 3);
-        m_currentTurnMaxAetherCount = m_currentAetherCount;
+
+
+        for (int i = m_turnAddModifieAetherCount.Count - 1; i >= 0; i--)
+        {
+            m_turnAddModifieAetherCount[i].Duration--;
+
+            if (m_turnAddModifieAetherCount[i].Duration <= 0)
+            {
+                m_turnAddModifieAetherCount.RemoveAt(i);
+            }
+        }
 
         units.Clear();
 
@@ -216,6 +269,17 @@ public class TurnManager : BaseSystem
     {
         m_turnCount = 1;
         m_roundCount++;
+        m_battleAddModifieAetherCount++;
+        for (int i = m_roundAddModifieAetherCount.Count - 1; i >= 0; i--)
+        {
+            m_roundAddModifieAetherCount[i].Duration--;
+
+            if (m_roundAddModifieAetherCount[i].Duration <= 0)
+            {
+                m_roundAddModifieAetherCount.RemoveAt(i);
+            }
+        }
+
         foreach (var key in m_unitTurnRecorder.Keys.ToList())
         {
             m_unitTurnRecorder[key] = 0;

@@ -36,7 +36,7 @@ public enum EResultType
 
     // 수치 변화
     E_CHANGEHP,
-    E_ADDSHIELD,
+    E_CHANGESHIELD,
     E_CHANGESTACK,
     E_CHANGEAETHER,
 
@@ -102,6 +102,21 @@ public class CastResult : ContextResult
     }
 }
 
+public enum EChangeType
+{
+    Remove,
+    Add,
+    Adjust
+}
+
+public enum EChangeSource
+{
+    Skill,
+    StatusEffect,
+    System
+}
+
+
 public class ChangeHPResult : ContextResult
 {
     /// <summary>
@@ -112,8 +127,10 @@ public class ChangeHPResult : ContextResult
     /// 오버된 수치
     /// </summary>
     public TargetPair Target;
-    public bool IsDamage;
-    public EStatusEffectType AttackStatusType;
+
+    public EChangeType ChangeType;
+    public EChangeSource ChangeSource;
+
     public float Amount;
     public float OverAmount;
     public ChangeHPResult() : base(EResultType.E_CHANGEHP)
@@ -122,11 +139,14 @@ public class ChangeHPResult : ContextResult
     }
 }
 
-public class AddShieldResult : ContextResult
+public class ChangeShieldResult : ContextResult
 {
     public TargetPair Target;
+
+    public EChangeType ChangeType;
+
     public float Amount;
-    public AddShieldResult() : base(EResultType.E_ADDSHIELD)
+    public ChangeShieldResult() : base(EResultType.E_CHANGESHIELD)
     {
 
     }

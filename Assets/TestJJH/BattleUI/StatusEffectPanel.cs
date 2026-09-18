@@ -35,26 +35,28 @@ public class StatusEffectPanel : MonoBehaviour
         return m_statusEffectUIPool.GetObject();
     }
 
-    public void ChangeStatusEffect(Sprite uiSprite, EStatusEffectType statusType, int duration, int stack, bool isNew)
+    public void ChangeStatusEffect(Sprite uiSprite, EStatusEffectType statusType, int roundDuration, int turnDuration, int stack)
     {
-        Debug.Log("UI / " + statusType.ToString() + " : " + isNew.ToString());
-        if(isNew)
+        if (turnDuration == 0 && roundDuration == 0)
         {
-            var ui = GetUI();
-            m_statusEffectUIDic.Add(statusType, ui);
-            ui.InitIalize(uiSprite, duration, stack);
+            if (m_statusEffectUIDic.TryGetValue(statusType, out var ui))
+            {
+                m_statusEffectUIDic.Remove(statusType);
+                ReturnUI(ui);
+            }
+
+            return;
+        }
+
+        if (m_statusEffectUIDic.TryGetValue(statusType, out var currentUI))
+        {
+            currentUI.ReInit(roundDuration, turnDuration, stack);
         }
         else
         {
-            if (duration == 0)
-            {
-                ReturnUI(m_statusEffectUIDic[statusType]);
-                return;
-            }
-            else
-            {
-                m_statusEffectUIDic[statusType].ReInit(duration, stack);
-            }
+            var ui = GetUI();
+            m_statusEffectUIDic.Add(statusType, ui);
+            ui.InitIalize(uiSprite, roundDuration, turnDuration, stack);
         }
     }
 }

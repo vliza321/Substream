@@ -75,7 +75,7 @@ public class Flow
 
     public float TotalDamage
     {
-        get { return m_resultCollector.GetResults<ChangeHPResult>().Sum(r => r.IsDamage?r.Amount:0); }
+        get { return m_resultCollector.GetResults<ChangeHPResult>().Sum(r => r.ChangeType == EChangeType.Remove ? r.Amount : 0); }
     }
 
     /*

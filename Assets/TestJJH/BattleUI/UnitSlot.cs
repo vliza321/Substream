@@ -78,8 +78,8 @@ public class UnitSlot : UIObject
         m_statusEffectUIPanel.gameObject.SetActive(true);
     }
 
-    public void ChangeStatusEffect(Sprite uiSprite, EStatusEffectType statusType, int duration, int stack, bool isNew)
+    public void ChangeStatusEffect(Sprite uiSprite, EStatusEffectType statusType, int roundDuration, int turnDuration, int stack)
     {
-        m_statusEffectUIPanel.ChangeStatusEffect(uiSprite, statusType, duration, stack, isNew);
+        m_statusEffectUIPanel.ChangeStatusEffect(uiSprite, statusType, roundDuration, turnDuration, stack);
     }
 }

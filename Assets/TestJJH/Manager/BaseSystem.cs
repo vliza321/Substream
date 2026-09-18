@@ -84,36 +84,6 @@ public abstract class UnitManagingSystem : BaseSystem
         }
     }
 
-    public void DamageEventBundle(Flow flow, BattleContext context, int pos)
-    {
-        // 흡혈 번들
-        CardAbilityFlowInput Input = (CardAbilityFlowInput)flow.Input;
-        Unit CastUnit = m_units[pos];
-        float Value = flow.Collector.GetResults<ChangeHPResult>().Sum(r => r.IsDamage ? r.Amount : 0);
-
-        // 회복량 계산
-        float FinalAmount = Value * context.EffectValue;
-
-
-        // 초과 회복 계산
-        float OverHeal = Unit(pos).HealthValue.Now + FinalAmount - Unit(pos).HealthValue.Max;
-
-        // 오버 힐 처리
-        if (OverHeal > 0) FinalAmount -= OverHeal;
-
-        Unit(pos).HealthValue.Now += FinalAmount;
-
-        // 기록
-        var Record = new ChangeHPResult()
-        {
-            Target = new TargetPair() { isCharacter = m_isSystemAboutCharacter, position = pos },
-            IsDamage = false,
-            AttackStatusType = EStatusEffectType.E_NONE,
-            Amount = FinalAmount,
-        };
-        flow.Record(Record);
-    }
-
     public float ResolveActionUseStatValue(Flow flow, BattleContext context, Unit unit, int targetPosition)
     {
         float result = 1;
@@ -126,7 +96,7 @@ public abstract class UnitManagingSystem : BaseSystem
                 break;
 
             case EStatSource.E_MAXAETHER:
-                result = m_turnManager.CurrentTurnMaxEtherCount;
+                result = m_turnManager.CurrentTurnMaxAetherCount;
                 break;
             case EStatSource.E_AETHER:
                 result = m_turnManager.CurrentAetherCount;
@@ -137,13 +107,13 @@ public abstract class UnitManagingSystem : BaseSystem
 
                 break;
             case EStatSource.E_MAXHP:
-                result = unit.HealthValue.Max;
+                result = unit.MaxHealthValue.Now;
                 break;
             case EStatSource.E_DEFAULTHP:
-                result = unit.HealthValue.Base;
+                result = unit.MaxHealthValue.Base;
                 break;
             case EStatSource.E_LOSTHP:
-                result = unit.HealthValue.Max - unit.HealthValue.Now;
+                result = Math.Max(unit.MaxHealthValue.Now - unit.HealthValue.Now, 0);
                 break;
             case EStatSource.E_HP:
                 result = unit.HealthValue.Now;
@@ -198,7 +168,7 @@ public abstract class UnitManagingSystem : BaseSystem
             case EScaleType.E_DECK:
                 break;
             case EScaleType.E_MAXAETHER:
-                result = m_turnManager.CurrentTurnMaxEtherCount;
+                result = m_turnManager.CurrentTurnMaxAetherCount;
                 break;
             case EScaleType.E_AETHER:
                 result = m_turnManager.CurrentAetherCount;
@@ -209,13 +179,13 @@ public abstract class UnitManagingSystem : BaseSystem
                 break;
 
             case EScaleType.E_MAXHP:
-                result = (int)unit.HealthValue.Max;
+                result = (int)unit.MaxHealthValue.Now;
                 break;
             case EScaleType.E_DEFAULTHP:
                 result = (int)unit.HealthValue.Base;
                 break;
             case EScaleType.E_LOSTHP:
-                result = (int)(unit.HealthValue.Max - unit.HealthValue.Now);
+                result = (int)(unit.MaxHealthValue.Now - unit.HealthValue.Now);
                 break;
             case EScaleType.E_HP:
                 result = (int)unit.HealthValue.Now;
@@ -323,7 +293,7 @@ public abstract class UnitManagingSystem : BaseSystem
         }
 
         // 사망 콜
-        if (Unit(targetPosition).HealthValue.Now < 0)
+        if (Unit(targetPosition).HealthValue.Now <= 0)
         {
             m_masterManager.UnitDying(Unit(targetPosition));
             return;
@@ -367,15 +337,7 @@ public abstract class UnitManagingSystem : BaseSystem
             Unit(targetPosition).ToDamage(flow, true, FinalAmount);
         }
 
-        // 사망 콜
-        if (Unit(targetPosition).HealthValue.Now < 0)
-        {
-            m_masterManager.UnitDying(Unit(targetPosition));
-            return;
-        }
-
         AddStatusEffectToUnit(flow, context, targetPosition);
-
 
         // 바운스 적용
         float ScaleCount = ResolveActionScaleStatValue(flow, context, CastUnit, targetPosition);
@@ -417,6 +379,15 @@ public abstract class UnitManagingSystem : BaseSystem
 
             // 피해량 적용
             Unit(targetPosition).ToDamage(flow, true, FinalAmount);
+
+            AddStatusEffectToUnit(flow, context, targetPosition);
+        }
+
+        // 사망 콜
+        if (Unit(targetPosition).HealthValue.Now <= 0)
+        {
+            m_masterManager.UnitDying(Unit(targetPosition));
+            return;
         }
     }
 
@@ -547,7 +518,7 @@ public abstract class UnitManagingSystem : BaseSystem
         {
             float FinalAmount = TrueAmount;
 
-            Unit(targetPosition).AddVaritationStat(flow, context.TargetStatSource, context.RoundDuration, context.StatusDuration, FinalAmount);
+            Unit(targetPosition).AddVaritationStat(flow, context.TargetStatSource, context.RoundDuration, context.TurnDuration, FinalAmount);
         }
     }
 
@@ -570,7 +541,7 @@ public abstract class UnitManagingSystem : BaseSystem
 
         for (int i = 0; i < context.HitCount; i++)
         {
-            Unit(targetPosition).AddStatusEffect(flow, context.StatusType, context.RoundDuration, context.StatusDuration, context.TriggerConditionValue);
+            Unit(targetPosition).AddStatusEffect(flow, context.StatusType, context.RoundDuration, context.TurnDuration, context.TriggerConditionValue);
         }
     }
 

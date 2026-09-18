@@ -65,7 +65,7 @@ class BattleContextWriter : IContextWriter
         ctx.StatusType = ctx.SkillData.StatusType;
         ctx.StatusCount = ctx.SkillData.StatusCount;
         ctx.RoundDuration = ctx.SkillData.RoundDuration;
-        ctx.StatusDuration = ctx.SkillData.StatusDuration;
+        ctx.TurnDuration = ctx.SkillData.TurnDuration;
 
         ctx.TargetType = ctx.SkillData.TargetType;
         ctx.TargetCount = ctx.SkillData.TargetCount;

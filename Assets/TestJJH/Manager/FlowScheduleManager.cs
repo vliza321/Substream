@@ -465,10 +465,10 @@ public class FlowScheduleManager : BaseSystem, IUpdatableManager
                 }
                 break;
             case ETargetType.E_NONE:
-                Debug.Log("cardSkil TargetType is none");
+                Debug.Log("cardSkill TargetType is none");
                 break;
             default:
-                Debug.Log("cardSkil TargetType is warring");
+                Debug.Log("cardSkill TargetType is warring");
                 break;
         }
         foreach (var unit in targetUnits)

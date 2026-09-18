@@ -100,32 +100,33 @@ class UIChangeHPEvent : UIEventStrategy
 
         if (result.Target.isCharacter)
         {
-            Facade.CharacterUIManager.ChangeHPEvent(result.Target.position, result.IsDamage, result.AttackStatusType, (int)result.Amount);
+            Facade.CharacterUIManager.ChangeHPEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
         }
         else
         {
-            Facade.MonsterUIManager.ChangeHPEvent(result.Target.position, result.IsDamage, result.AttackStatusType, (int)result.Amount);
+            Facade.MonsterUIManager.ChangeHPEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
         }
     }
 }
 
-class UIAddShieldEvent : UIEventStrategy
+class UIChangeShieldEvent : UIEventStrategy
 {
 
-    public UIAddShieldEvent(UIFacade facade)
+    public UIChangeShieldEvent(UIFacade facade)
     {
         Facade = facade;
     }
+
     public override void Execute(ContextResult contextResult)
     {
-        var result = contextResult as AddShieldResult;
+        var result = contextResult as ChangeShieldResult;
         if (result.Target.isCharacter)
         {
-            Facade.CharacterUIManager.ShieldEvent(result.Target.position, (int)result.Amount);
+            Facade.CharacterUIManager.ShieldEvent(result.Target.position, result.ChangeType, (int)result.Amount);
         }
         else
         {
-            Facade.MonsterUIManager.ShieldEvent(result.Target.position, (int)result.Amount);
+            Facade.MonsterUIManager.ShieldEvent(result.Target.position, result.ChangeType, (int)result.Amount);
         }
     }
 }
@@ -143,11 +144,11 @@ class UIChangeStackEvent : UIEventStrategy
         
         if (result.Target.isCharacter)
         {
-            Facade.CharacterUIManager.ChangeStack(result.Target.position, result.StatusType, result.TurnDuration, result.Stack, result.IsNew);
+            Facade.CharacterUIManager.ChangeStack(result.Target.position, result.StatusType, result.RoundDuration, result.TurnDuration, result.Stack);
         }
         else
         {
-            Facade.MonsterUIManager.ChangeStack(result.Target.position, result.StatusType, result.TurnDuration, result.Stack, result.IsNew);
+            Facade.MonsterUIManager.ChangeStack(result.Target.position, result.StatusType, result.RoundDuration, result.TurnDuration, result.Stack);
         }
     }
 }

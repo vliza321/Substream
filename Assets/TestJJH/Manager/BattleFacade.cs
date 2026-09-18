@@ -374,14 +374,16 @@ public class BattleFacade
         {
             // 타겟 없어도 작동해야됨 
             case EStatSource.E_MAXAETHER:
-                m_turnManager.ExpendMaxAetherCount((int)context.EffectValue);
+                if (context.RoundDuration > 0) m_turnManager.ExpendRoundModifieAetherCount((int)context.RoundDuration, (int)context.EffectValue);
+                else if (context.TurnDuration > 0) m_turnManager.ExpendTurnModifieAetherCount((int)context.TurnDuration, (int)context.EffectValue);
+                else if (context.RoundDuration == 0 && context.TurnDuration == 0) m_turnManager.ExpendBattleModifieAetherCount((int)context.EffectValue);
                 flow.Record(new ChangeAetherResult());
                 return;
             case EStatSource.E_AETHER:
                 int CoverAether = 0;
                 if (context.EffectValue >= 99)
                     CoverAether =
-                        m_turnManager.CurrentTurnMaxEtherCount - m_turnManager.CurrentAetherCount;
+                        m_turnManager.CurrentTurnMaxAetherCount - m_turnManager.CurrentAetherCount;
                 else CoverAether = (int)context.EffectValue;
                 m_turnManager.UseAether(-CoverAether);
                 flow.Record(new ChangeAetherResult());

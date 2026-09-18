@@ -32,13 +32,15 @@ public class AmountText : UIObject
     [SerializeField]
     private ObjectPool<AmountText> ObjectPool;
 
-    public void Initialize(string txt, ESkillType type, EStatusEffectType statusType, Vector3 pos, ObjectPool<AmountText> objectPool)
+    public void Initialize(string txt, ESkillType type, Vector3 pos, ObjectPool<AmountText> objectPool)
     {
         ObjectPool = objectPool;
 
         text.text = txt;
         transform.position = pos;
-        switch(type)
+
+
+        switch (type)
         {
             case ESkillType.E_DEFAULT:
                 StartCoroutine(FadeOut(DefaultColor));
@@ -65,7 +67,7 @@ public class AmountText : UIObject
 
     public void ConditionalDamage(EStatusEffectType statusType)
     {
-        switch(statusType)
+        switch (statusType)
         {
             case EStatusEffectType.E_NONE:
                 break;

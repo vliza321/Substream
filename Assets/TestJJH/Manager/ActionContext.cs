@@ -63,7 +63,7 @@ public class BattleContext : ActionContext
     public EStatusEffectType StatusType;
     public int StatusCount;
     public int RoundDuration;
-    public int StatusDuration;
+    public int TurnDuration;
 
     public bool RefreshTarget;
     public ETargetType TargetType;

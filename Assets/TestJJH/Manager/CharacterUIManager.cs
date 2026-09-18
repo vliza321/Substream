@@ -61,7 +61,7 @@ public class CharacterUIManager : BaseUI<CharacterManager>
 
     public void InitHP(int pos)
     {
-        m_unitUISlot[pos].HealthPointSlider.maxValue = m_model.Units[pos].HealthValue.Now + m_model.Units[pos].ShieldValue.Now;
+        m_unitUISlot[pos].HealthPointSlider.maxValue = m_model.Units[pos].MaxHealthValue.Now + m_model.Units[pos].ShieldValue.Now;
         m_unitUISlot[pos].HealthPointSlider.value = m_model.Units[pos].HealthValue.Now;
         if (m_model.Units[pos].ShieldValue.Now > 0) m_unitUISlot[pos].ShieldSliderBGI.gameObject.SetActive(true);
         else m_unitUISlot[pos].ShieldSliderBGI.gameObject.SetActive(false);
@@ -108,6 +108,7 @@ public class CharacterUIManager : BaseUI<CharacterManager>
     {
         // m_unitUISlot[sourceUnitpos];
     }
+
     public void CastEvent(int sourceUnitpos)
     {
         // m_unitUISlot[sourceUnitpos];
@@ -119,32 +120,42 @@ public class CharacterUIManager : BaseUI<CharacterManager>
         // 상태 이상 애니메이션 출력
     }
 
-    public void ChangeHPEvent(int targetUnitPos, bool isDamage, EStatusEffectType statusType, int amount)
+    public void ChangeHPEvent(int targetUnitPos, EChangeType changeType, EChangeSource source, int amount)
     {
         InitHP(targetUnitPos - 1);
-        var text = m_textPool.GetObject();
-        if (isDamage)
+        if (source == EChangeSource.System)
         {
-            text.Initialize(amount.ToString(), ESkillType.E_DAMAGE, statusType, m_unitUIPosition[targetUnitPos - 1].position, m_textPool);
+            return;
         }
-        else
+
+        var text = m_textPool.GetObject();
+        if (changeType == EChangeType.Remove)
         {
-            text.Initialize(amount.ToString(), ESkillType.E_HEAL, EStatusEffectType.E_NONE, m_unitUIPosition[targetUnitPos - 1].position, m_textPool);
+            text.Initialize(amount.ToString(), ESkillType.E_DAMAGE, m_unitUIPosition[targetUnitPos - 1].position, m_textPool);
+        }
+        else if (changeType == EChangeType.Add)
+        {
+            text.Initialize(amount.ToString(), ESkillType.E_HEAL, m_unitUIPosition[targetUnitPos - 1].position, m_textPool);
         }
     }
 
-    public void ShieldEvent(int targetUnitPos, int amount)
+    public void ShieldEvent(int targetUnitPos, EChangeType changeType, int amount)
     {
         InitHP(targetUnitPos - 1);
+        if (changeType != EChangeType.Add)
+        {
+            return;
+        }
+
         var text = m_textPool.GetObject();
-        text.Initialize(amount.ToString(), ESkillType.E_SHIELD, EStatusEffectType.E_NONE, m_unitUIPosition[targetUnitPos - 1].position, m_textPool);
+        text.Initialize(amount.ToString(), ESkillType.E_SHIELD, m_unitUIPosition[targetUnitPos - 1].position, m_textPool);
     }
 
 
 
-    public void ChangeStack(int targetUnitPos, EStatusEffectType statusType, int duration, int stack, bool isNew)
+    public void ChangeStack(int targetUnitPos, EStatusEffectType statusType, int roundDuration,int turnDuration, int stack)
     {
-        m_unitUISlot[targetUnitPos - 1].ChangeStatusEffect(ResourcesManager.Status_Effect_Image((int)statusType), statusType, duration, stack, isNew);
+        m_unitUISlot[targetUnitPos - 1].ChangeStatusEffect(ResourcesManager.Status_Effect_Image((int)statusType), statusType, roundDuration, turnDuration, stack);
     }
 }
     

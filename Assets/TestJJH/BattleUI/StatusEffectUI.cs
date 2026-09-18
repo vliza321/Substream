@@ -8,26 +8,34 @@ public class StatusEffectUI : UIObject
     [SerializeField]
     private Image m_statusEffectImage;
     [SerializeField]
-    private Text m_statusEffectDuration;
+    private Text m_statusEffectTurnDuration;
+    [SerializeField]
+    private Text m_statusEffectRoundDuration;
     [SerializeField]
     private Text m_statusEffectStackCount;
 
 
-    public void InitIalize(Sprite image, int duration, int stack)
+    public void InitIalize(Sprite image, int roundDuraion, int turnDuration, int stack)
     {
         m_statusEffectImage.sprite = image;
         
-        m_statusEffectDuration.text = duration.ToString();
-        if (duration <= 0) m_statusEffectDuration.text = " ";
+        m_statusEffectTurnDuration.text = turnDuration.ToString();
+        if (turnDuration <= 0) m_statusEffectTurnDuration.text = " ";
+
+        m_statusEffectRoundDuration.text = roundDuraion.ToString();
+        if (roundDuraion <= 0) m_statusEffectRoundDuration.text = " ";
 
         m_statusEffectStackCount.text = stack.ToString();
         if (stack <= 0) m_statusEffectStackCount.text = " ";
     }
 
-    public void ReInit(int duration, int stack)
+    public void ReInit(int roundDuraion, int turnDuration, int stack)
     {
-        m_statusEffectDuration.text = duration.ToString();
-        if (duration <= 0) m_statusEffectDuration.text = " ";
+        m_statusEffectTurnDuration.text = turnDuration.ToString();
+        if (turnDuration <= 0) m_statusEffectTurnDuration.text = " ";
+
+        m_statusEffectRoundDuration.text = roundDuraion.ToString();
+        if (roundDuraion <= 0) m_statusEffectRoundDuration.text = " ";
 
         m_statusEffectStackCount.text = stack.ToString();
         if (stack <= 0) m_statusEffectStackCount.text = " ";

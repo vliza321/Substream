@@ -5686,6 +5686,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_currentAetherCount: 0
+  m_MaxAetherCount: 0
+  m_battleAddModifieAetherCount: 0
+  m_turnAddModifieAetherCount: []
+  m_roundAddModifieAetherCount: []
 --- !u!4 &1391298755
 Transform:
   m_ObjectHideFlags: 0

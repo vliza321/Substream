@@ -82,7 +82,7 @@ public class TurnUIManager : BaseUI<TurnManager>
 
         m_stringBuilder.Clear();
         m_stringBuilder
-            .Append(m_model.CurrentTurnMaxEtherCount);
+            .Append(m_model.CurrentTurnMaxAetherCount);
         m_aetherText3.text = m_stringBuilder.ToString();
     }
 

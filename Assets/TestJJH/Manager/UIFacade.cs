@@ -41,7 +41,7 @@ public class UIFacade
             { EResultType.E_CHANGESTACK, new UIChangeStackEvent(this)},// 수정 필요
 
             { EResultType.E_CHANGEHP, new UIChangeHPEvent(this)},
-            { EResultType.E_ADDSHIELD, new UIAddShieldEvent(this)},
+            { EResultType.E_CHANGESHIELD, new UIChangeShieldEvent(this)},
             { EResultType.E_CHANGEAETHER, new UIChangeAetherEvent(this)},
 
             { EResultType.E_CARDDRAW, new UIDrawCardEvent(this)},

@@ -25,7 +25,7 @@ public class BleedStatusEffectStrategy : IStatusEffectStrategy
 
         float DEFPoint = unit.DefendValue.Now;
 
-        float FinalAmount = HPRate * unit.HealthValue.Max * unit.GetSpecialStatusEffect(EStatusEffectType.E_BLEED) * (1 - DEFPoint / (DEFPoint + 1000));
+        float FinalAmount = HPRate * unit.HealthValue.Now * unit.GetSpecialStatusEffect(EStatusEffectType.E_BLEED) * (1 - DEFPoint / (DEFPoint + 1000));
 
         unit.ToDamage(flow, true, FinalAmount);
     }
@@ -49,7 +49,7 @@ public class OverLoadStatusEffectStrategy : IStatusEffectStrategy
     {
         float HPRate = 0.003f;
 
-        float FinalAmount = HPRate * unit.HealthValue.Max * unit.GetSpecialStatusEffect(EStatusEffectType.E_OVERLOAD);
+        float FinalAmount = HPRate * unit.MaxHealthValue.Now * unit.GetSpecialStatusEffect(EStatusEffectType.E_OVERLOAD);
 
         unit.ToDamage(flow, true, FinalAmount);
     }

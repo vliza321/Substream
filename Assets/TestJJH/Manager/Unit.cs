@@ -31,55 +31,33 @@ public class StatusEffect
 public class Stat
 {
     [SerializeField]
-    public readonly float Base = 0;
+    private float m_base;
+
+    private float m_modifiers;
+
+    public float Base => m_base;
     
     public float Now
     {
         get
         {
-            if (Now > 0)
-            {
-                return Base + modifiers;
-            }
-            else
-            {
-                return 0;
-            }
-        }
-        set
-        {
-            Now = value;
+            return Mathf.Max(0, m_base + m_modifiers);
         }
     }
-
-    public float Max
-    {
-        get
-        {
-            float value = Base + modifiers;
-
-            return value;
-        }
-    }
-
-    private float modifiers = 0;
 
     public Stat(float Base)
     {
-        this.Base = Base;
-        this.Now = Base;
+        this.m_base = Base;
     }
 
     public void AddModifie(float amount)
     {
-        modifiers += amount;
-        Now += amount;
+        m_modifiers += amount;
     }
 
-    public void SetModifie(float amount)
+    public void RemoveModifie(float amount)
     {
-        modifiers -= amount;
-        Now -= amount;
+        m_modifiers -= amount;
     }
 }
 
@@ -115,6 +93,7 @@ public abstract class Unit
         return m_stats[source];
     }
 
+    public Stat MaxHealthValue => m_stats[EStatSource.E_MAXHP];
     public Stat HealthValue => m_stats[EStatSource.E_HP];
     public Stat AttackValue => m_stats[EStatSource.E_ATK];
     public Stat DefendValue => m_stats[EStatSource.E_DEF];
@@ -205,6 +184,7 @@ public abstract class Unit
         m_isCharacter = isCharacter;
         m_position = pos;
 
+        m_stats.Add(EStatSource.E_MAXHP, new Stat(hp));
         m_stats.Add(EStatSource.E_HP, new Stat(hp));
         m_stats.Add(EStatSource.E_ATK, new Stat(atk));
         m_stats.Add(EStatSource.E_DEF, new Stat(def));
@@ -215,19 +195,27 @@ public abstract class Unit
         m_stats.Add(EStatSource.E_PENETRATION, new Stat(Penetration));
         m_stats.Add(EStatSource.E_AETHERRECOVER, new Stat(AetherRecoverPoint));
 
+
         DebugHP = m_stats[EStatSource.E_HP];
 
+        m_numericStatusEffect.Add(EStatusEffectType.M_MAXHP, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.M_ATK, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.M_DEF, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.M_SPEED, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.M_CRITICALRATE, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.M_CRITICALDAMAGE, new List<StatusEffect>());
+        m_numericStatusEffect.Add(EStatusEffectType.M_AETHERRECOVER, new List<StatusEffect>());
+        m_numericStatusEffect.Add(EStatusEffectType.M_PENETRATION, new List<StatusEffect>());
 
+
+        m_numericStatusEffect.Add(EStatusEffectType.P_MAXHP, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.P_ATK, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.P_DEF, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.P_SPEED, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.P_CRITICALRATE, new List<StatusEffect>());
         m_numericStatusEffect.Add(EStatusEffectType.P_CRITICALDAMAGE, new List<StatusEffect>());
+        m_numericStatusEffect.Add(EStatusEffectType.P_AETHERRECOVER, new List<StatusEffect>());
+        m_numericStatusEffect.Add(EStatusEffectType.P_PENETRATION, new List<StatusEffect>());
 
 
         m_specialStatusEffect.Add(EStatusEffectType.E_BLEED, new List<StatusEffect>());
@@ -252,23 +240,25 @@ public abstract class Unit
             // 지속시간 감소
             for (int i = 0; i < SE.Value.Count; i++)
             {
+                if (SE.Value[i].RoundDuration > 0) continue;
+
                 if (SE.Value[i].TurnDuration > 0)
                     SE.Value[i].TurnDuration--;
             }
+
+            // 지속시간 0인 상태이상 삭제
+            SE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
 
             var Record = new ChangeStackResult()
             {
                 Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
                 StatusType = SE.Key,
-                RoundDuration = SE.Value.Max(r => r.RoundDuration),
-                TurnDuration = SE.Value.Max(r => r.TurnDuration),
-                Stack = ((int)SE.Value.Sum(r => r.Stack)),
+                RoundDuration = SE.Value.Count == 0 ? 0 : SE.Value.Max(r => r.RoundDuration),
+                TurnDuration = SE.Value.Count == 0 ? 0 : SE.Value.Max(r => r.TurnDuration),
+                Stack = SE.Value.Count == 0 ? 0 : (int)SE.Value.Sum(r => r.Stack),
                 IsNew = false
             };
             flow.Record(Record);
-
-            // 지속시간 0인 상태이상 삭제
-            SE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
         }
 
         foreach (var NE in m_numericStatusEffect)
@@ -281,27 +271,41 @@ public abstract class Unit
             // 지속시간 감소
             for (int i = 0; i < NE.Value.Count; i++)
             {
+                if (NE.Value[i].RoundDuration > 0) continue;
+
                 if (NE.Value[i].TurnDuration > 0)
                     NE.Value[i].TurnDuration--;
 
-                if (NE.Value[i].TurnDuration == 0)
-                    m_stats[StatusEffectToStat(NE.Key, NE.Value[i].Stack)].SetModifie(NE.Value[i].Stack);   
+                if (NE.Value[i].RoundDuration == 0 && NE.Value[i].TurnDuration == 0)
+                {
+                    RemoveStatModifier(StatusEffectToStat(NE.Value[i].Effect, NE.Value[i].Stack), NE.Value[i].Stack);
+                    if (StatusEffectToStat(NE.Key, NE.Value[i].Stack) == EStatSource.E_MAXHP)
+                    {
+                        var HPRecord = new ChangeHPResult()
+                        {
+                            Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
+                            ChangeType = EChangeType.Adjust,
+                            ChangeSource = EChangeSource.System,
+                            Amount = NE.Value[i].Stack,
+                        };
+                        flow.Record(HPRecord);
+                    }
+                }
             }
+
+            // 지속시간 0인 상태이상 삭제
+            NE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
 
             var Record = new ChangeStackResult()
             {
                 Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
                 StatusType = NE.Key,
-                RoundDuration = NE.Value.Max(r => r.RoundDuration),
-                TurnDuration = NE.Value.Max(r => r.TurnDuration),
-                Stack = ((int)NE.Value.Sum(r => r.Stack)),
+                RoundDuration = NE.Value.Count == 0 ? 0 : NE.Value.Max(r => r.RoundDuration),
+                TurnDuration = NE.Value.Count == 0 ? 0 : NE.Value.Max(r => r.TurnDuration),
+                Stack = NE.Value.Count == 0 ? 0 : (int)NE.Value.Sum(r => r.Stack),
                 IsNew = false
             };
             flow.Record(Record);
-            
-            // 지속시간 0인 상태이상 삭제
-            NE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
-
         }
     }
 
@@ -322,19 +326,19 @@ public abstract class Unit
                     SE.Value[i].RoundDuration--;
             }
 
+            // 지속시간 0인 상태이상 삭제
+            SE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
+
             var Record = new ChangeStackResult()
             {
                 Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
                 StatusType = SE.Key,
-                RoundDuration = SE.Value.Max(r => r.RoundDuration),
-                TurnDuration = SE.Value.Max(r => r.TurnDuration),
-                Stack = ((int)SE.Value.Sum(r => r.Stack)),
+                RoundDuration = SE.Value.Count == 0 ? 0 : SE.Value.Max(r => r.RoundDuration),
+                TurnDuration = SE.Value.Count == 0 ? 0 : SE.Value.Max(r => r.TurnDuration),
+                Stack = SE.Value.Count == 0 ? 0 : (int)SE.Value.Sum(r => r.Stack),
                 IsNew = false
             };
             flow.Record(Record);
-
-            // 지속시간 0인 상태이상 삭제
-            SE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
         }
 
         foreach (var NE in m_numericStatusEffect)
@@ -350,23 +354,36 @@ public abstract class Unit
                 if (NE.Value[i].RoundDuration > 0)
                     NE.Value[i].RoundDuration--;
 
-                if (NE.Value[i].RoundDuration == 0)
-                    m_stats[StatusEffectToStat(NE.Key, NE.Value[i].Stack)].SetModifie(NE.Value[i].Stack);
+                if (NE.Value[i].RoundDuration == 0 && NE.Value[i].TurnDuration == 0)
+                {
+                    RemoveStatModifier(StatusEffectToStat(NE.Value[i].Effect, NE.Value[i].Stack), NE.Value[i].Stack);
+                    if (StatusEffectToStat(NE.Key, NE.Value[i].Stack) == EStatSource.E_MAXHP)
+                    {
+                        var HPRecord = new ChangeHPResult()
+                        {
+                            Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
+                            ChangeType = EChangeType.Adjust,
+                            ChangeSource = EChangeSource.System,
+                            Amount = NE.Value[i].Stack,
+                        };
+                        flow.Record(HPRecord);
+                    }
+                }
             }
+
+            // 지속시간 0인 상태이상 삭제
+            NE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
 
             var Record = new ChangeStackResult()
             {
                 Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
                 StatusType = NE.Key,
-                RoundDuration = NE.Value.Max(r => r.RoundDuration),
-                TurnDuration = NE.Value.Max(r => r.TurnDuration),
-                Stack = ((int)NE.Value.Sum(r => r.Stack)),
+                RoundDuration = NE.Value.Count == 0 ? 0 : NE.Value.Max(r => r.RoundDuration),
+                TurnDuration = NE.Value.Count == 0 ? 0 : NE.Value.Max(r => r.TurnDuration),
+                Stack = NE.Value.Count == 0 ? 0 : (int)NE.Value.Sum(r => r.Stack),
                 IsNew = false
             };
             flow.Record(Record);
-
-            // 지속시간 0인 상태이상 삭제
-            NE.Value.RemoveAll(se => se.TurnDuration == 0 && se.RoundDuration == 0);
         }
     }
 
@@ -443,7 +460,7 @@ public abstract class Unit
 
             case EStatusEffectType.M_MAXHP:
             case EStatusEffectType.P_MAXHP:
-                StatType = EStatSource.E_HP;
+                StatType = EStatSource.E_MAXHP;
                 break;
             case EStatusEffectType.M_ATK:
             case EStatusEffectType.P_ATK:
@@ -483,8 +500,32 @@ public abstract class Unit
         
         m_stats[targetStatSource].AddModifie(value);
 
+        if(targetStatSource == EStatSource.E_MAXHP)
+        {
+            if (value > 0)
+            {
+                // 최대 체력이 늘어나는 만큼 체력 회복
+                m_stats[EStatSource.E_HP].AddModifie(value);
+
+                var HPRecord = new ChangeHPResult()
+                {
+                    Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
+                    ChangeType = EChangeType.Add,
+                    ChangeSource = EChangeSource.Skill,
+                    Amount = value,
+                };
+                flow.Record(HPRecord);
+            }
+            else
+            {
+                // 최대 체력이 줄어드는 만큼 체력 감소, 데미지는 아니기에 표현하지 않음
+                if (m_stats[targetStatSource].Now < m_stats[EStatSource.E_HP].Now)
+                    m_stats[EStatSource.E_HP].RemoveModifie(m_stats[EStatSource.E_HP].Now - m_stats[targetStatSource].Now);
+            }
+        }
+
         EStatusEffectType StatusType = StatToStatusEffect(targetStatSource, value);
-        StatusEffect StatusEffect = new StatusEffect(StatusType, turnDuration, roundDuration, value);
+        StatusEffect StatusEffect = new StatusEffect(StatusType, roundDuration, turnDuration, value);
 
         m_numericStatusEffect[StatusType].Add(StatusEffect);
 
@@ -500,11 +541,24 @@ public abstract class Unit
         flow.Record(Record);
     }
 
+    private void RemoveStatModifier(EStatSource statSource, float value)
+    {
+        m_stats[statSource].RemoveModifie(value);
+
+        if (statSource == EStatSource.E_MAXHP &&
+            HealthValue.Now > MaxHealthValue.Now)
+        {
+            HealthValue.RemoveModifie(
+                HealthValue.Now - MaxHealthValue.Now
+            );
+        }
+    }
+
     public void AddStatusEffect(Flow flow, EStatusEffectType statusEffectType, int roundDuration, int turnDuration, float value)
     {
         Debug.Log(statusEffectType + " : add" + value);
 
-        StatusEffect StatusEffect = new StatusEffect(statusEffectType, turnDuration, roundDuration, value);
+        StatusEffect StatusEffect = new StatusEffect(statusEffectType, roundDuration, turnDuration, value);
 
         m_specialStatusEffect[statusEffectType].Add(StatusEffect);
 
@@ -532,7 +586,7 @@ public abstract class Unit
             // 지속시간 감소
             for (int i = 0; i < NE.Value.Count; i++)
             {
-                m_stats[StatusEffectToStat(NE.Key, NE.Value[i].Stack)].SetModifie(NE.Value[i].Stack);
+                m_stats[StatusEffectToStat(NE.Key, NE.Value[i].Stack)].RemoveModifie(NE.Value[i].Stack);
             }
 
             // 지속시간 0인 상태이상 삭제
@@ -562,58 +616,73 @@ public abstract class Unit
 
     public void ToDamage(Flow flow, bool isDamage, float amount)
     {
-        // 기록
-        var Record = new ChangeHPResult()
-        {
-            Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
-            IsDamage = isDamage,
-            AttackStatusType = EStatusEffectType.E_NONE,
-            Amount = amount,
-        };
-        flow.Record(Record);
-
         // 피해량 쉴드에 적용
-        if (ShieldValue.Now > 0)
+        float absorbed =
+            Mathf.Min(ShieldValue.Now, amount);
+
+        ShieldValue.RemoveModifie(absorbed);
+
+        amount -= absorbed;
+
+        if(absorbed > 0)
         {
-            ShieldValue.Now -= amount;
-            amount -= ShieldValue.Now;
+            var absorbedRecord = new ChangeShieldResult()
+            {
+                Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
+                ChangeType = EChangeType.Adjust,
+                Amount = -absorbed,
+            };
+            flow.Record(absorbedRecord);
         }
 
         // 쉴드 감쇄가 들어가도 피해량 남았으면 피해량 적용
         if (amount > 0)
         {
-            HealthValue.Now -= amount;
+            HealthValue.RemoveModifie(amount);
+
+            // 쉴드를 제외한 실제 피해량만 기록
+            var Record = new ChangeHPResult()
+            {
+                Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
+                ChangeType = EChangeType.Remove,
+                ChangeSource = EChangeSource.Skill,
+                Amount = amount,
+            };
+            flow.Record(Record);
         }
     }
 
     public void ToHeal(Flow flow, bool isDamage, float amount)
     {
-        float OverHeal = HealthValue.Now + amount - HealthValue.Max;
+        float overHeal = Mathf.Max(
+            0,
+            HealthValue.Now + amount - MaxHealthValue.Now
+        );
+
+        float actualHeal = amount - overHeal;
 
         // 오버 힐 처리
-        if (OverHeal > 0) amount -= OverHeal;
-        else OverHeal = 0;
-        HealthValue.Now += amount;
+        HealthValue.AddModifie(actualHeal);
 
         var Record = new ChangeHPResult()
         {
             Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
-            IsDamage = false,
-            AttackStatusType = EStatusEffectType.E_NONE,
-            Amount = amount,
-            OverAmount = OverHeal
+            ChangeType = EChangeType.Add,
+            ChangeSource = EChangeSource.Skill,
+            Amount = actualHeal,
+            OverAmount = overHeal
         };
         flow.Record(Record);
     }
 
     public void ToSheild(Flow flow, float amount)
     {
+        ShieldValue.AddModifie(amount);
 
-        ShieldValue.Now += amount;
-
-        var Record = new AddShieldResult()
+        var Record = new ChangeShieldResult()
         {
             Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
+            ChangeType = EChangeType.Add,
             Amount = amount
         };
         // 기록
