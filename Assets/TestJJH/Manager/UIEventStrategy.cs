@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class UIEventStrategy
 {
     protected UIFacade Facade;
-    public abstract void Execute(ContextResult contextResult);
+    public abstract IEnumerator Execute(ContextResult contextResult);
 }
 
 class UIDefaultEvent : UIEventStrategy
@@ -15,9 +15,10 @@ class UIDefaultEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         Debug.Log("UI디폴트 이벤트 실행");
+        yield return null;
     }
 }
 
@@ -28,17 +29,17 @@ class UIAttackEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result =  contextResult as AttackResult;
 
         if (result.Attacker.isCharacter) {
-            Facade.CharacterUIManager.AttackEvent(result.Attacker.position,
+            yield return Facade.CharacterUIManager.AttackEvent(result.Attacker.position,
                 result.Target.isCharacter, result.Target.position);
         }
         else
         {
-            Facade.MonsterUIManager.AttackEvent(result.Attacker.position,
+            yield return Facade.MonsterUIManager.AttackEvent(result.Attacker.position,
                 result.Target.isCharacter, result.Target.position);
         }
     }
@@ -51,39 +52,17 @@ class UICastEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as CastResult;
 
         if (result.Caster.isCharacter)
         {
-            Facade.CharacterUIManager.CastEvent(result.Caster.position);
+            yield return Facade.CharacterUIManager.CastEvent(result.Caster.position);
         }
         else
         {
-            Facade.MonsterUIManager.CastEvent(result.Caster.position);
-        }
-    }
-}
-
-class UISkillEvent : UIEventStrategy
-{
-    public UISkillEvent(UIFacade facade)
-    {
-        Facade = facade;
-    }
-
-    public override void Execute(ContextResult contextResult)
-    {
-        var result = contextResult as CastResult;
-
-        if (result.Caster.isCharacter)
-        {
-            Facade.CharacterUIManager.CastEvent(result.Caster.position);
-        }
-        else
-        {
-            Facade.MonsterUIManager.CastEvent(result.Caster.position);
+            yield return Facade.MonsterUIManager.CastEvent(result.Caster.position);
         }
     }
 }
@@ -94,17 +73,17 @@ class UIChangeHPEvent : UIEventStrategy
     {
         Facade = facade;
     }
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as ChangeHPResult;
 
         if (result.Target.isCharacter)
         {
-            Facade.CharacterUIManager.ChangeHPEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
+            yield return Facade.CharacterUIManager.ChangeHPEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
         }
         else
         {
-            Facade.MonsterUIManager.ChangeHPEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
+            yield return Facade.MonsterUIManager.ChangeHPEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
         }
     }
 }
@@ -117,16 +96,16 @@ class UIChangeShieldEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as ChangeShieldResult;
         if (result.Target.isCharacter)
         {
-            Facade.CharacterUIManager.ShieldEvent(result.Target.position, result.ChangeType, (int)result.Amount);
+            yield return Facade.CharacterUIManager.ShieldEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
         }
         else
         {
-            Facade.MonsterUIManager.ShieldEvent(result.Target.position, result.ChangeType, (int)result.Amount);
+            yield return Facade.MonsterUIManager.ShieldEvent(result.Target.position, result.ChangeType, result.ChangeSource, (int)result.Amount);
         }
     }
 }
@@ -138,17 +117,17 @@ class UIChangeStackEvent : UIEventStrategy
     {
         Facade = facade;
     }
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as ChangeStackResult;
         
         if (result.Target.isCharacter)
         {
-            Facade.CharacterUIManager.ChangeStack(result.Target.position, result.StatusType, result.RoundDuration, result.TurnDuration, result.Stack);
+            yield return Facade.CharacterUIManager.ChangeStack(result.Target.position, result.StatusType, result.RoundDuration, result.TurnDuration, result.Stack);
         }
         else
         {
-            Facade.MonsterUIManager.ChangeStack(result.Target.position, result.StatusType, result.RoundDuration, result.TurnDuration, result.Stack);
+            yield return Facade.MonsterUIManager.ChangeStack(result.Target.position, result.StatusType, result.RoundDuration, result.TurnDuration, result.Stack);
         }
     }
 }
@@ -160,11 +139,11 @@ class UIChangeAetherEvent : UIEventStrategy
     {
         Facade = facade;
     }
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as ChangeAetherResult;
 
-        Facade.TurnUIManager.SetRoundAetherInfo();
+        yield return Facade.TurnUIManager.SetRoundAetherInfo();
     }
 }
 
@@ -185,9 +164,11 @@ class UIDrawCardEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as CardDrawResult;
+
+        yield return null;
 
         //Facade.CardUIManager.DrawNewHandCard();
     }
@@ -200,10 +181,11 @@ class UIUseCardEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as CardUseResult;
 
+        yield return null;
         ///Facade.CardUIManager.DrawCard();
         ///
 
@@ -217,10 +199,11 @@ class UIUnitDeathEvent : UIEventStrategy
         Facade = facade;
     }
 
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as UnitDyingResult;
 
+        yield return null;
         Facade.MasterManager.ApplyUIUnitDying(result.Victim);
     }
 }
@@ -231,8 +214,9 @@ class UIEndTurnEvent : UIEventStrategy
     {
         Facade = facade;
     }
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
+        yield return null;
         Facade.MasterManager.ApplyUISetTurn();
     }
 }
@@ -243,8 +227,9 @@ class UIEndRoundEvent : UIEventStrategy
     {
         Facade = facade;
     }
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
+        yield return null;
         Facade.MasterManager.ApplyUISetRound();
     }
 }
@@ -255,9 +240,10 @@ class UIPausaeEvent : UIEventStrategy
     {
         Facade = facade;
     }
-    public override void Execute(ContextResult contextResult)
+    public override IEnumerator Execute(ContextResult contextResult)
     {
         var result = contextResult as PauseResult;
+        yield return null;
     }
 }
 

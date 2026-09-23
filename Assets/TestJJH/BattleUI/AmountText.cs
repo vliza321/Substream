@@ -18,8 +18,6 @@ public class AmountText : UIObject
     [SerializeField]
     private Color HealColor;
     [SerializeField]
-    private Color DrawColor;
-    [SerializeField]
     private Color ShieldColor;
     [SerializeField]
     private Color BleedDamageColor;
@@ -32,13 +30,28 @@ public class AmountText : UIObject
     [SerializeField]
     private ObjectPool<AmountText> ObjectPool;
 
-    public void Initialize(string txt, ESkillType type, Vector3 pos, ObjectPool<AmountText> objectPool)
+    public void Initialize(string txt, ESkillType type, EChangeSource changeType, Vector3 pos, ObjectPool<AmountText> objectPool)
     {
         ObjectPool = objectPool;
 
         text.text = txt;
         transform.position = pos;
 
+        switch (changeType)
+        {
+            case EChangeSource.Overload:
+                StartCoroutine(FadeOut(BleedDamageColor));
+                return;
+            case EChangeSource.Shock:
+                StartCoroutine(FadeOut(ShockDamageColor));
+                return;
+            case EChangeSource.Bleed:
+                StartCoroutine(FadeOut(OverloadDamageColor));
+                return;
+            case EChangeSource.Skill:
+            case EChangeSource.System:
+                break;
+        }
 
         switch (type)
         {
@@ -48,9 +61,6 @@ public class AmountText : UIObject
             case ESkillType.E_DAMAGE:
                 StartCoroutine(FadeOut(DamageColor));
                 break;
-            /*case ESkillType.E_CONDITIONAL:
-                ConditionalDamage(statusType);
-                break;*/
             case ESkillType.E_HEAL:
                 text.text = "+" + txt;
                 StartCoroutine(FadeOut(HealColor));
@@ -58,9 +68,6 @@ public class AmountText : UIObject
             case ESkillType.E_SHIELD:
                 text.text = "+" + txt;
                 StartCoroutine(FadeOut(ShieldColor));
-                break;
-            case ESkillType.E_DRAW:
-                StartCoroutine(FadeOut(DrawColor));
                 break;
         }
     }

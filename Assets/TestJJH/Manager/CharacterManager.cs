@@ -26,7 +26,7 @@ public class CharacterManager : UnitManagingSystem
     public override void DataInitialize()
     {
         // 파티 정보
-        int[] characterID = { 1, 5 };
+        int[] characterID = { 1,1,1, 5 };
         int i = 1;
         foreach (var a in characterID)
         {

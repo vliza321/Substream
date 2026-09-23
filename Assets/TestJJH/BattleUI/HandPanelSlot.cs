@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class HandPanelSlot : CardPanelSlot
 {
+    private Vector3 m_normalScale = new Vector3(0.9f, 0.9f, 0.9f);
+    private float m_onMouseScale = 1.35f;
+
     public override void ReleaseObject(CardSlot cardSlot)
     {
         cardSlot.m_inPool = true;
@@ -34,13 +37,13 @@ public class HandPanelSlot : CardPanelSlot
     {
         cardSlot.s_isReady = false;
         cardSlot.Button.transform.localPosition = (new Vector3(0, 0, 0));
-        cardSlot.Button.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+        cardSlot.Button.transform.localScale = m_normalScale;
     }
 
     public override void OnMouseCardEvent(CardSlot cardSlot)
     {
         cardSlot.Button.transform.localPosition = (new Vector3(0, 100, 0));
-        cardSlot.Button.transform.localScale = new Vector3(1.30f, 1.30f, 1.30f);
+        cardSlot.Button.transform.localScale = m_normalScale * m_onMouseScale;
     }
 
     public override void SetCardEvent()
@@ -49,7 +52,13 @@ public class HandPanelSlot : CardPanelSlot
         {
             slot.Value.s_isReady = false;
             slot.Value.Button.transform.localPosition = (new Vector3(0, 0, 0));
-            slot.Value.Button.transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);
+            slot.Value.Button.transform.localScale = m_normalScale;
         }
+    }
+
+    public override void Synchronization()
+    {
+        base.Synchronization();
+        SetCardEvent();
     }
 }

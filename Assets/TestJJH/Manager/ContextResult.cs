@@ -106,13 +106,16 @@ public enum EChangeType
 {
     Remove,
     Add,
-    Adjust
+    Adjust,
+    Broken
 }
 
 public enum EChangeSource
 {
     Skill,
-    StatusEffect,
+    Overload,
+    Bleed,
+    Shock,
     System
 }
 
@@ -144,6 +147,7 @@ public class ChangeShieldResult : ContextResult
     public TargetPair Target;
 
     public EChangeType ChangeType;
+    public EChangeSource ChangeSource;
 
     public float Amount;
     public ChangeShieldResult() : base(EResultType.E_CHANGESHIELD)

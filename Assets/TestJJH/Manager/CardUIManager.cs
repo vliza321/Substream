@@ -151,6 +151,7 @@ public class CardUIManager : BaseUI<CardManager>
     public override void Synchronization()
     {
         HandGridInit(m_model.NowHand, this.ResourcesManager);
+        SetCardEvent(m_handPanelSlot);
 
         foreach (var d in m_deckPanelSlot)
         {
@@ -188,6 +189,7 @@ public class CardUIManager : BaseUI<CardManager>
         {
             DrawCard(card);
         }
+        SetCardEvent(m_handPanelSlot);
     }
 
     private void DrawCard(Card card)
@@ -334,6 +336,7 @@ public class CardUIManager : BaseUI<CardManager>
             eventTrigger.triggers.Add(Entry);
             eventTrigger.triggers.Add(Exit);
         }
+        SetCardEvent(m_handPanelSlot);
     }
 
     public IEnumerator SelectUnit(CardSlot cardSlot)

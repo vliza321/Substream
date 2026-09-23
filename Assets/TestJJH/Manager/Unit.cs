@@ -630,6 +630,7 @@ public abstract class Unit
             {
                 Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
                 ChangeType = EChangeType.Adjust,
+                ChangeSource = EChangeSource.Skill,
                 Amount = -absorbed,
             };
             flow.Record(absorbedRecord);
@@ -683,6 +684,7 @@ public abstract class Unit
         {
             Target = new TargetPair() { isCharacter = IsCharacter, position = Position },
             ChangeType = EChangeType.Add,
+            ChangeSource = EChangeSource.Skill,
             Amount = amount
         };
         // 기록
